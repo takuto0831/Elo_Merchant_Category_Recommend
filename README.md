@@ -16,7 +16,7 @@ Diners Club(クレジットカード)
 
 Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロイヤリティの予測値, yはロイヤリティの実測値を表す.
 
-<img src="https://latex.codecogs.com/gif.latex?\mbox{RMSE}&space;=&space;\sqrt{\frac{1}{n}\sum_{i=1}^n(y_i&space;-&space;\hat{y}_i)^2}"/>
+<img src="https://latex.codecogs.com/gif.latex?\centering&space;\mbox{RMSE}&space;=&space;\sqrt{\frac{1}{n}\sum_{i=1}^n(y_i&space;-&space;\hat{y}_i)^2}"/>
 
 ## Data
 
