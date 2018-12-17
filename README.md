@@ -14,6 +14,25 @@ Diners Club(クレジットカード)
 
 ## Evaluation
 
-Root Mean Squared Error (RMSE)
+Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロイヤリティの予測値, yはロイヤリティの実測値を表す.
 
 <img src="https://latex.codecogs.com/gif.latex?\mbox{RMSE}&space;=&space;\sqrt{\frac{1}{n}\sum_{i=1}^n(y_i&space;-&space;\hat{y}_i)^2}"/>
+
+## Data
+
+- train.csv,test.csv:
+
+訓練データおよび予測に使用するデータ, `card_id`が各顧客のidとなる.
+
+- historical_transactions.csv, new_merchant_transactions.csv:
+
+それそれのカードにおける取引情報を含み, 前者は3ヶ月間の全てのカードの`merchant_id`ごとの取引情報を含み, 後者は新しい加盟店との取引情報(任意のカードにおいてまだ訪問されていない`merchant_id`)が2ヶ月間含まれている.
+
+- merchants.csv:
+
+それぞれの`merchant_id`に関する情報を含む.
+
+- Data_Dictionary.xlsx:
+
+テーブル説明,データの諸情報追加する.
+
