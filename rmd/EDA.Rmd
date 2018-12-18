@@ -91,7 +91,10 @@ skimr::skim_to_wide(train) %>% kable()
 skimr::skim_to_wide(test) %>% kable()
 skimr::skim_to_wide(transactions) %>% kable()
 skimr::skim_to_wide(new_transactions) %>% kable()
-skimr::skim_to_wide(merchants) %>% kable()
+merchants %>% 
+  mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %>% 
+  skimr::skim_to_wide() %>% 
+  kable()
 ```
 
 ## summarytools
@@ -101,7 +104,16 @@ dfSummary(train) %>% view(method = "render")
 dfSummary(test) %>% view(method = "render")
 dfSummary(transactions) %>% view(method = "render")
 dfSummary(new_transactions) %>% view(method = "render")
-dfSummary(merchants) %>% view(method = "render")
+merchants %>% 
+  mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %>% 
+  dfSummary() %>% 
+  view(method = "render")
 ```
 
+```{r}
+merchants %>% 
+  mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %>% 
+  head(1000) %>% 
+  View
+```
 
