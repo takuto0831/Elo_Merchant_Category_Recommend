@@ -63,7 +63,7 @@ theme_set(theme_classic(base_size = 18,base_family = "Helvetica")) # 英語用
 - Delete duplicate column names and change them to lower case
 
 ```{r}
-train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train.feather")
+train <- read_feather("~/Desktop/Elo_kaggle/input/feather/train.feather")
 test <- read_feather("~/Desktop/Elo_kaggle/input/feather/test.feather")
 transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/historical_transactions.feather")
 new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/new_merchant_transactions.feather")
