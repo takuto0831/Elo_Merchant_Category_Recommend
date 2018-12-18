@@ -110,10 +110,5 @@ merchants %>%
   view(method = "render")
 ```
 
-```{r}
-merchants %>% 
-  mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %>% 
-  head(1000) %>% 
-  View
-```
+
 
