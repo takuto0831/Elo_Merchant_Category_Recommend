@@ -34,6 +34,7 @@ opts_knit$set(width=75)
 ```{r package, message=FALSE}
 library(tidyverse)
 library(summarytools) # summary easily for EDA
+library(skimr)
 library(feather)
 ```
 
@@ -81,6 +82,16 @@ test %>% glimpse()
 transactions %>% glimpse()
 new_transactions %>% glimpse()
 merchants %>% glimpse()
+```
+
+## skimr
+
+```{r}
+skimr::skim_to_wide(train) %>% kable()
+skimr::skim_to_wide(test) %>% kable()
+skimr::skim_to_wide(transactions) %>% kable()
+skimr::skim_to_wide(new_transactions) %>% kable()
+skimr::skim_to_wide(merchants) %>% kable()
 ```
 
 ## summarytools
