@@ -14,7 +14,7 @@ rm(list = ls())
 
 ```{r set up, message=FALSE}
 # set directory
-setwd("~/Desktop/Kaggle/") 
+setwd("~/Desktop/Elo_kaggle/") 
 # max.print 
 options(max.print="200", digits=5)
 # Global options
@@ -61,10 +61,49 @@ theme_set(theme_classic(base_size = 18,base_family = "Helvetica")) # 英語用
 
 ```{r cache=TRUE}
 # 訓練データ, テストデータ
-train <- read_csv("~/Desktop/kaggle/input/raw/train.csv",
+train <- read_csv("~/Desktop/Elo_kaggle/input/raw/train.csv",
                   na = c("XNA","NA","","NaN","?")) %>% 
   mutate_if(is.character, funs(factor(.))) 
-
-
+test <- read_csv("~/Desktop/Elo_kaggle/input/raw/test.csv",
+                  na = c("XNA","NA","","NaN","?")) %>% 
+  mutate_if(is.character, funs(factor(.))) 
+# 取引情報データ
+transactions <- read_csv("~/Desktop/Elo_kaggle/input/raw/historical_transactions.csv",
+                         na = c("XNA","NA","","NaN","?")) %>% 
+  mutate_if(is.character, funs(factor(.))) 
+new_transactions <- read_csv("~/Desktop/Elo_kaggle/input/raw/new_merchant_transactions.csv",
+                             na = c("XNA","NA","","NaN","?")) %>% 
+  mutate_if(is.character, funs(factor(.))) 
+# 加盟店情報
+merchants <- read_csv("~/Desktop/Elo_kaggle/input/raw/merchants.csv",
+                      na = c("XNA","NA","","NaN","?")) %>% 
+  mutate_if(is.character, funs(factor(.))) 
+# サブミットファイル
+sample_submit <- read_csv("~/Desktop/Elo_kaggle/input/raw/sample_submission.csv",
+                          na = c("XNA","NA","","NaN","?")) %>% 
+  mutate_if(is.character, funs(factor(.))) 
 ```
+
+# EDA{.tabset .tabset-fade .tabset-pills}
+
+## glimpse 
+
+```{r}
+train %>% glimpse()
+test %>% glimpse()
+transactions %>% glimpse()
+new_transactions %>% glimpse()
+merchants %>% glimpse()
+```
+
+## summarytools
+
+```{r}
+dfSummary(train) %>% view(method = "render")
+dfSummary(test) %>% view(method = "render")
+dfSummary(transactions) %>% view(method = "render")
+dfSummary(new_transactions) %>% view(method = "render")
+dfSummary(merchants) %>% view(method = "render")
+```
+
 
