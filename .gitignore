@@ -1,3 +1,5 @@
-input/raw
+input/original
+input/feather
+input/processed
 .Rproj.user
 .Rhistory
