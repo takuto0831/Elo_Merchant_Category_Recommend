@@ -43,5 +43,32 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 # Directory
 
 ```
-
+├── Elo_kaggle.Rproj
+├── README.md
+├── input
+│   ├── About_data.xlsx
+│   ├── feather
+│   │   ├── historical_transactions.feather
+│   │   ├── merchants.feather
+│   │   ├── new_merchant_transactions.feather
+│   │   ├── sample_submission.feather
+│   │   ├── test.feather
+│   │   └── train.feather
+│   ├── original
+│   │   ├── historical_transactions.csv
+│   │   ├── merchants.csv
+│   │   ├── new_merchant_transactions.csv
+│   │   ├── sample_submission.csv
+│   │   ├── test.csv
+│   │   └── train.csv
+│   └── processed
+├── jn
+│   └── Kaggle_kernel_tunguz.ipynb
+├── py
+├── rmd
+│   ├── EDA.Rmd
+│   └── EDA.html
+└── script
+    ├── convert_to_feather.R
+    └── preprocess1.R
 ```
