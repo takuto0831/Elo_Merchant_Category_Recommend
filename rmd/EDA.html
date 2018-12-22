@@ -1158,8 +1158,8 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>merchants %&gt;% mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %&gt;% skimr::skim_to_wide() %&gt;% 
-    kable()</code></pre>
+<pre class="r"><code>merchants %&gt;% mutate_if(is.numeric, funs(ifelse(is.finite(.), ., NA_real_))) %&gt;% 
+    skimr::skim_to_wide() %&gt;% kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -1168,6 +1168,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <th align="center">missing</th>
 <th align="center">complete</th>
 <th align="center">n</th>
+<th align="center">n_unique</th>
+<th align="center">top_counts</th>
+<th align="center">ordered</th>
 <th align="center">mean</th>
 <th align="center">sd</th>
 <th align="center">p0</th>
@@ -1180,11 +1183,104 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 </thead>
 <tbody>
 <tr class="odd">
+<td align="center">factor</td>
+<td align="center">category_1</td>
+<td align="center">0</td>
+<td align="center">334696</td>
+<td align="center">334696</td>
+<td align="center">2</td>
+<td align="center">N: 327657, Y: 7039, NA: 0</td>
+<td align="center">FALSE</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="even">
+<td align="center">factor</td>
+<td align="center">category_4</td>
+<td align="center">0</td>
+<td align="center">334696</td>
+<td align="center">334696</td>
+<td align="center">2</td>
+<td align="center">N: 238596, Y: 96100, NA: 0</td>
+<td align="center">FALSE</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="odd">
+<td align="center">factor</td>
+<td align="center">merchant_id</td>
+<td align="center">0</td>
+<td align="center">334696</td>
+<td align="center">334696</td>
+<td align="center">334633</td>
+<td align="center">M_I: 4, M_I: 4, M_I: 4, M_I: 4</td>
+<td align="center">FALSE</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="even">
+<td align="center">factor</td>
+<td align="center">most_recent_purchases_range</td>
+<td align="center">0</td>
+<td align="center">334696</td>
+<td align="center">334696</td>
+<td align="center">5</td>
+<td align="center">E: 175309, D: 119187, C: 34144, B: 5046</td>
+<td align="center">FALSE</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="odd">
+<td align="center">factor</td>
+<td align="center">most_recent_sales_range</td>
+<td align="center">0</td>
+<td align="center">334696</td>
+<td align="center">334696</td>
+<td align="center">5</td>
+<td align="center">E: 177104, D: 117475, C: 34075, B: 5037</td>
+<td align="center">FALSE</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="even">
 <td align="center">integer</td>
 <td align="center">active_months_lag12</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">11.6</td>
 <td align="center">1.52</td>
 <td align="center">1</td>
@@ -1194,12 +1290,15 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">12</td>
 <td align="center">▁▁▁▁▁▁▁▇</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">integer</td>
 <td align="center">active_months_lag3</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">2.99</td>
 <td align="center">0.095</td>
 <td align="center">1</td>
@@ -1209,12 +1308,15 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">3</td>
 <td align="center">▁▁▁▁▁▁▁▇</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">integer</td>
 <td align="center">active_months_lag6</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">5.95</td>
 <td align="center">0.39</td>
 <td align="center">1</td>
@@ -1224,42 +1326,15 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">6</td>
 <td align="center">▁▁▁▁▁▁▁▇</td>
 </tr>
-<tr class="even">
-<td align="center">integer</td>
-<td align="center">category_1</td>
-<td align="center">0</td>
-<td align="center">334696</td>
-<td align="center">334696</td>
-<td align="center">1.02</td>
-<td align="center">0.14</td>
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">2</td>
-<td align="center">▇▁▁▁▁▁▁▁</td>
-</tr>
 <tr class="odd">
-<td align="center">integer</td>
-<td align="center">category_4</td>
-<td align="center">0</td>
-<td align="center">334696</td>
-<td align="center">334696</td>
-<td align="center">1.29</td>
-<td align="center">0.45</td>
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">2</td>
-<td align="center">2</td>
-<td align="center">▇▁▁▁▁▁▁▃</td>
-</tr>
-<tr class="even">
 <td align="center">integer</td>
 <td align="center">city_id</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">102.92</td>
 <td align="center">107.09</td>
 <td align="center">-1</td>
@@ -1269,12 +1344,15 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">347</td>
 <td align="center">▇▂▂▂▁▁▂▁</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">integer</td>
 <td align="center">merchant_category_id</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">423.13</td>
 <td align="center">252.9</td>
 <td align="center">-1</td>
@@ -1284,12 +1362,15 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">891</td>
 <td align="center">▇▃▇▇▃▃▇▅</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">integer</td>
 <td align="center">merchant_group_id</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">31028.74</td>
 <td align="center">31623.04</td>
 <td align="center">1</td>
@@ -1299,57 +1380,15 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">112586</td>
 <td align="center">▇▃▂▂▁▁▁▁</td>
 </tr>
-<tr class="odd">
-<td align="center">integer</td>
-<td align="center">merchant_id</td>
-<td align="center">0</td>
-<td align="center">334696</td>
-<td align="center">334696</td>
-<td align="center">167316.88</td>
-<td align="center">96601.37</td>
-<td align="center">1</td>
-<td align="center">83658.75</td>
-<td align="center">167316.5</td>
-<td align="center">250978.25</td>
-<td align="center">334633</td>
-<td align="center">▇▇▇▇▇▇▇▇</td>
-</tr>
-<tr class="even">
-<td align="center">integer</td>
-<td align="center">most_recent_purchases_range</td>
-<td align="center">0</td>
-<td align="center">334696</td>
-<td align="center">334696</td>
-<td align="center">4.38</td>
-<td align="center">0.75</td>
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">5</td>
-<td align="center">5</td>
-<td align="center">5</td>
-<td align="center">▁▁▁▂▁▆▁▇</td>
-</tr>
-<tr class="odd">
-<td align="center">integer</td>
-<td align="center">most_recent_sales_range</td>
-<td align="center">0</td>
-<td align="center">334696</td>
-<td align="center">334696</td>
-<td align="center">4.39</td>
-<td align="center">0.75</td>
-<td align="center">1</td>
-<td align="center">4</td>
-<td align="center">5</td>
-<td align="center">5</td>
-<td align="center">5</td>
-<td align="center">▁▁▁▂▁▅▁▇</td>
-</tr>
 <tr class="even">
 <td align="center">integer</td>
 <td align="center">state_id</td>
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">11.86</td>
 <td align="center">6.18</td>
 <td align="center">-1</td>
@@ -1365,6 +1404,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">25.12</td>
 <td align="center">9.81</td>
 <td align="center">-1</td>
@@ -1380,6 +1422,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">3</td>
 <td align="center">334693</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">2.08</td>
 <td align="center">88.44</td>
 <td align="center">0.098</td>
@@ -1395,6 +1440,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">3</td>
 <td align="center">334693</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">1.59</td>
 <td align="center">107.19</td>
 <td align="center">0.33</td>
@@ -1410,6 +1458,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">3</td>
 <td align="center">334693</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">1.89</td>
 <td align="center">97.86</td>
 <td align="center">0.17</td>
@@ -1425,6 +1476,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">13</td>
 <td align="center">334683</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">25.23</td>
 <td align="center">5251.84</td>
 <td align="center">-82.13</td>
@@ -1440,6 +1494,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">13</td>
 <td align="center">334683</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">13.83</td>
 <td align="center">2395.49</td>
 <td align="center">-82.13</td>
@@ -1455,6 +1512,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">13</td>
 <td align="center">334683</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">21.65</td>
 <td align="center">3947.11</td>
 <td align="center">-82.13</td>
@@ -1470,6 +1530,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">11887</td>
 <td align="center">322809</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">2.38</td>
 <td align="center">1.56</td>
 <td align="center">1</td>
@@ -1485,6 +1548,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">0.011</td>
 <td align="center">1.1</td>
 <td align="center">-0.057</td>
@@ -1500,6 +1566,9 @@ $ category_2                  &lt;dbl&gt; 1, 1, 5, NA, NA, 5, 1, NA, 1, NA, ...<
 <td align="center">0</td>
 <td align="center">334696</td>
 <td align="center">334696</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
 <td align="center">0.0081</td>
 <td align="center">1.07</td>
 <td align="center">-0.057</td>
@@ -1665,7 +1734,7 @@ IQR (CV) : 1.65 (-9.78)</td>
     </tr>
   </tbody>
 </table>
-<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-18</p>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-22</p>
 </div>
 <pre class="r"><code>dfSummary(test) %&gt;% view(method = &quot;render&quot;)</code></pre>
 <div class="container st-container">
@@ -1803,7 +1872,7 @@ IQR (CV) : 1 (0.88)</td>
     </tr>
   </tbody>
 </table>
-<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-18</p>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-22</p>
 </div>
 <pre class="r"><code>dfSummary(transactions) %&gt;% view(method = &quot;render&quot;)</code></pre>
 <div class="container st-container">
@@ -2072,7 +2141,7 @@ IQR (CV) : 15 (0.36)</td>
     </tr>
   </tbody>
 </table>
-<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-18</p>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-22</p>
 </div>
 <pre class="r"><code>dfSummary(new_transactions) %&gt;% view(method = &quot;render&quot;)</code></pre>
 <div class="container st-container">
@@ -2340,10 +2409,10 @@ IQR (CV) : 15 (0.39)</td>
     </tr>
   </tbody>
 </table>
-<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-18</p>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-22</p>
 </div>
-<pre class="r"><code>merchants %&gt;% mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %&gt;% dfSummary() %&gt;% 
-    view(method = &quot;render&quot;)</code></pre>
+<pre class="r"><code>merchants %&gt;% mutate_if(is.numeric, funs(ifelse(is.finite(.), ., NA_real_))) %&gt;% 
+    dfSummary() %&gt;% view(method = &quot;render&quot;)</code></pre>
 <div class="container st-container">
 <h3>Data Frame Summary  </h3>
 <strong>N</strong>: 334696
@@ -2363,13 +2432,30 @@ IQR (CV) : 15 (0.39)</td>
     <tr>
       <td align="center">1</td>
       <td align="left">merchant_id
-[integer]</td>
-      <td align="left">mean (sd) : 167316.88 (96601.37)
-min &lt; med &lt; max :
-1 &lt; 167316.5 &lt; 334633
-IQR (CV) : 167319.5 (0.58)</td>
-      <td align="left">334633 distinct values</td>
-      <td align="center" border="0"><img src="data:image/png;base64,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"></td>
+[factor]</td>
+      <td align="left">1. M_ID_000025127f
+2. M_ID_0000699140
+3. M_ID_00006a5552
+4. M_ID_000087311e
+5. M_ID_0000ab0b2d
+6. M_ID_0000edb21f
+7. M_ID_0000f3475c
+8. M_ID_0000fd7caf
+9. M_ID_0001c38687
+10. M_ID_0002237144
+[ 334623 others ]</td>
+      <td align="left">1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+1 (0.0%)
+334686 (100.0%)</td>
+      <td align="center" border="0"><img src="data:image/png;base64,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"></td>
       <td align="center">334696
 (100%)</td>
       <td align="center">0
@@ -2453,13 +2539,11 @@ IQR (CV) : 0.01 (132.11)</td>
     <tr>
       <td align="center">7</td>
       <td align="left">category_1
-[integer]</td>
-      <td align="left">mean (sd) : 1.02 (0.14)
-min &lt; med &lt; max :
-1 &lt; 1 &lt; 2
-IQR (CV) : 0 (0.14)</td>
-      <td align="left">1 : 327657 (97.9%)
-2 : 7039 (2.1%)</td>
+[factor]</td>
+      <td align="left">1. N
+2. Y</td>
+      <td align="left">327657 (97.9%)
+7039 (2.1%)</td>
       <td align="center" border="0"><img src="data:image/png;base64,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"></td>
       <td align="center">334696
 (100%)</td>
@@ -2469,16 +2553,17 @@ IQR (CV) : 0 (0.14)</td>
     <tr>
       <td align="center">8</td>
       <td align="left">most_recent_sales_range
-[integer]</td>
-      <td align="left">mean (sd) : 4.39 (0.75)
-min &lt; med &lt; max :
-1 &lt; 5 &lt; 5
-IQR (CV) : 1 (0.17)</td>
-      <td align="left">1 : 1005 (0.3%)
-2 : 5037 (1.5%)
-3 : 34075 (10.2%)
-4 : 117475 (35.1%)
-5 : 177104 (52.9%)</td>
+[factor]</td>
+      <td align="left">1. A
+2. B
+3. C
+4. D
+5. E</td>
+      <td align="left">1005 (0.3%)
+5037 (1.5%)
+34075 (10.2%)
+117475 (35.1%)
+177104 (52.9%)</td>
       <td align="center" border="0"><img src="data:image/png;base64,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"></td>
       <td align="center">334696
 (100%)</td>
@@ -2488,16 +2573,17 @@ IQR (CV) : 1 (0.17)</td>
     <tr>
       <td align="center">9</td>
       <td align="left">most_recent_purchases_range
-[integer]</td>
-      <td align="left">mean (sd) : 4.38 (0.75)
-min &lt; med &lt; max :
-1 &lt; 5 &lt; 5
-IQR (CV) : 1 (0.17)</td>
-      <td align="left">1 : 1010 (0.3%)
-2 : 5046 (1.5%)
-3 : 34144 (10.2%)
-4 : 119187 (35.6%)
-5 : 175309 (52.4%)</td>
+[factor]</td>
+      <td align="left">1. A
+2. B
+3. C
+4. D
+5. E</td>
+      <td align="left">1010 (0.3%)
+5046 (1.5%)
+34144 (10.2%)
+119187 (35.6%)
+175309 (52.4%)</td>
       <td align="center" border="0"><img src="data:image/png;base64,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"></td>
       <td align="center">334696
 (100%)</td>
@@ -2649,13 +2735,11 @@ IQR (CV) : 0 (0.13)</td>
     <tr>
       <td align="center">19</td>
       <td align="left">category_4
-[integer]</td>
-      <td align="left">mean (sd) : 1.29 (0.45)
-min &lt; med &lt; max :
-1 &lt; 1 &lt; 2
-IQR (CV) : 1 (0.35)</td>
-      <td align="left">1 : 238596 (71.3%)
-2 : 96100 (28.7%)</td>
+[factor]</td>
+      <td align="left">1. N
+2. Y</td>
+      <td align="left">238596 (71.3%)
+96100 (28.7%)</td>
       <td align="center" border="0"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAA0CAYAAABo1cEHAAAEGWlDQ1BrQ0dDb2xvclNwYWNlR2VuZXJpY1JHQgAAOI2NVV1oHFUUPrtzZyMkzlNsNIV0qD8NJQ2TVjShtLp/3d02bpZJNtoi6GT27s6Yyc44M7v9oU9FUHwx6psUxL+3gCAo9Q/bPrQvlQol2tQgKD60+INQ6Ium65k7M5lpurHeZe58853vnnvuuWfvBei5qliWkRQBFpquLRcy4nOHj4g9K5CEh6AXBqFXUR0rXalMAjZPC3e1W99Dwntf2dXd/p+tt0YdFSBxH2Kz5qgLiI8B8KdVy3YBevqRHz/qWh72Yui3MUDEL3q44WPXw3M+fo1pZuQs4tOIBVVTaoiXEI/MxfhGDPsxsNZfoE1q66ro5aJim3XdoLFw72H+n23BaIXzbcOnz5mfPoTvYVz7KzUl5+FRxEuqkp9G/Ajia219thzg25abkRE/BpDc3pqvphHvRFys2weqvp+krbWKIX7nhDbzLOItiM8358pTwdirqpPFnMF2xLc1WvLyOwTAibpbmvHHcvttU57y5+XqNZrLe3lE/Pq8eUj2fXKfOe3pfOjzhJYtB/yll5SDFcSDiH+hRkH25+L+sdxKEAMZahrlSX8ukqMOWy/jXW2m6M9LDBc31B9LFuv6gVKg/0Szi3KAr1kGq1GMjU/aLbnq6/lRxc4XfJ98hTargX++DbMJBSiYMIe9Ck1YAxFkKEAG3xbYaKmDDgYyFK0UGYpfoWYXG+fAPPI6tJnNwb7ClP7IyF+D+bjOtCpkhz6CFrIa/I6sFtNl8auFXGMTP34sNwI/JhkgEtmDz14ySfaRcTIBInmKPE32kxyyE2Tv+thKbEVePDfW/byMM1Kmm0XdObS7oGD/MypMXFPXrCwOtoYjyyn7BV29/MZfsVzpLDdRtuIZnbpXzvlf+ev8MvYr/Gqk4H/kV/G3csdazLuyTMPsbFhzd1UabQbjFvDRmcWJxR3zcfHkVw9GfpbJmeev9F08WW8uDkaslwX6avlWGU6NRKz0g/SHtCy9J30o/ca9zX3Kfc19zn3BXQKRO8ud477hLnAfc1/G9mrzGlrfexZ5GLdn6ZZrrEohI2wVHhZywjbhUWEy8icMCGNCUdiBlq3r+xafL549HQ5jH+an+1y+LlYBifuxAvRN/lVVVOlwlCkdVm9NOL5BE4wkQ2SMlDZU97hX86EilU/lUmkQUztTE6mx1EEPh7OmdqBtAvv8HdWpbrJS6tJj3n0CWdM6busNzRV3S9KTYhqvNiqWmuroiKgYhshMjmhTh9ptWhsF7970j/SbMrsPE1suR5z7DMC+P/Hs+y7ijrQAlhyAgccjbhjPygfeBTjzhNqy28EdkUh8C+DU9+z2v/oyeH791OncxHOs5y2AtTc7nb/f73TWPkD/qwBnjX8BoJ98VQNcC+8AAAInSURBVHgB7Zu9asJgFIaTqKlYsGOVjp07dwp0EgqdeyvegnPvwHvo6uLi2sE7iIUuRUogkgZqP79OXkA4P31cRISc97zPQxDJlyS8aIAGaMBKA+kp6HK5fEnT9KHX631bCU5OvQ00TXPZP8ULQt3PZrO78K43LcnMNLDdbj+jWCHxT7hjJcPh0Ex4gupt4ORSpjceySw3gFiW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOjliK4ViOhliW6SnOHh9NPh6PeVmWSZbhmWJWZqLtdru/wxT7/f55s9kUZpITVHUD4Ub1pTog4WiABmjgrIF4YHWxWFyNRqObs28cfzgcDuV8Pq8cryi+WvzxPplMXsfj8W2e5614oo4DhFO6eVVVb2HMY8ej/vXlo1j98CqKYhruWu7LCFIlq9Xqwv2iwgvy/4IwAK/jEcsrWeG9EEsYgNfxiOWVrPBeiCUMwOt4xPJKVngvxBIG4HU8YnklK7wXYgkD8DoesbySFd4LsYQBeB2PWF7JCu+FWMIAvI5HLK9khfdCLGEAXscjlleywnshljAAr+MRyytZ4b0QSxiA1/Hxmfe2bZv1ev0+GAzcH6YIhymzsG/tFaiWvaJYdV0/hUMG11pCdZ0jnNT56HoG16cBGuiggV/HGk87RjPGuQAAAABJRU5ErkJggg=="></td>
       <td align="center">334696
 (100%)</td>
@@ -2713,10 +2797,8 @@ IQR (CV) : 3 (0.66)</td>
     </tr>
   </tbody>
 </table>
-<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-18</p>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 0.8.8 (<a href='https://www.r-project.org/'>R</a> version 3.5.1)<br/>2018-12-22</p>
 </div>
-<pre class="r"><code>merchants %&gt;% mutate_all(funs(ifelse(is.finite(.), ., NA_real_))) %&gt;% head(1000) %&gt;% 
-    View</code></pre>
 </div>
 </div>
 
