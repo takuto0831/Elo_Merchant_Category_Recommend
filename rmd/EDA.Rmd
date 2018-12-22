@@ -92,7 +92,7 @@ skimr::skim_to_wide(test) %>% kable()
 skimr::skim_to_wide(transactions) %>% kable()
 skimr::skim_to_wide(new_transactions) %>% kable()
 merchants %>% 
-  mutate_if(is.numeric,funs(ifelse(is.finite(.), ., NA_real_))) %>% 
+  mutate_if(is.numeric,funs(ifelse(is.finite(.), ., NA_real_))) %>% View
   skimr::skim_to_wide() %>% 
   kable()
 ```
@@ -110,5 +110,26 @@ merchants %>%
   view(method = "render")
 ```
 
+# 基礎集計
+
+## train
+
+- -30 < くらいに外れ値がある.
+
+```{r}
+train %>% 
+  ggplot(aes(x=target)) +
+  geom_histogram(bins = 200)
+```
+
+## transaction
+
+- month_lag, purchase_dateの関係性
+
+```{r}
+transactions %>% 
+  ggplot(aes(x=purchase_date,y=month_lag)) +
+  geom_point()
+```
 
 
