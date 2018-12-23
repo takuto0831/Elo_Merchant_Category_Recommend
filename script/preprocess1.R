@@ -4,6 +4,7 @@ library(lubridate)
 library(feather)
 library(anytime)
 library(makedummies)
+library(modeest)
 
 # read data
 train <- read_feather("~/Desktop/Elo_kaggle/input/feather/train.feather")
@@ -14,7 +15,7 @@ merchants <- read_feather("~/Desktop/Elo_kaggle/input/feather/merchants.feather"
 
 # Feature engineering
 ## train, test
-train <-train %>% 
+train <- train %>% 
   mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
   mutate(diff = diff %>% as.numeric()) %>% 
   select(-first_active_month)
@@ -23,26 +24,69 @@ test <- test %>%
   mutate(diff = diff %>% as.numeric()) %>% 
   select(-first_active_month)
 ## transaction_history
-# 0 or 1に変更
-tmp <- transactions %>% 
+tmp <- 
+  # flag, category1: 0 or 1に変更, category_2: factor typeに変更
+  transactions %>% 
   mutate(authorized_flag = if_else(authorized_flag == "Y",1,0), 
          category_1 = if_else(category_1 == "Y",1,0)) %>% 
-  mutate(category_2 = category_2 %>% as.factor())
-# one hot encoding
+  mutate(category_2 = category_2 %>% as.factor()) %>% 
+  # 支払い分割数 (-1, 999の処理)
+  mutate(installments_minus = if_else(installments == -1,1,0),
+         installments_outlier = if_else(installments == 999,1,0),
+         installments = if_else(installments == -1,NA_integer_,
+                                if_else(installments == 999, NA_integer_,installments))) %>% 
+  # 支払い金額 (時系列変動を取り除くために, 平均との差を使う)
+  group_by(hours = floor_date(purchase_date,"hour")) %>% 
+  mutate(purchase_amount_diff = purchase_amount - mean(purchase_amount),
+         purchase_amount_abs = abs(purchase_amount - mean(purchase_amount))) %>% 
+  ungroup() %>% 
+  select(-purchase_date)
+# お店カテゴリー(one hot encoding)
 tmp <- bind_cols(tmp %>% select(-c(category_2,category_3)),
                  makedummies(dat = tmp,basal_level = TRUE,col = c("category_2","category_3"))) 
+
 # aggregate
-tmp1 <- tmp %>% 
-  group_by(card_id) %>% 
-  summarise(pay_count = n(),
-            authorized_flag_sum = sum(authorized_flag),
-            authorized_flag_mean = mean(authorized_flag),
-            installments_mean = mean(installments),
-            )
+tmp1 <- tmp %>% group_by(card_id) 
+tmp2 <- 
+  # 会計回数
+  summarise(tmp1, pay_count = n()) %>% 
+  # 各種idのカウント, NAも1種とする. 
+  left_join(
+    summarise_at(tmp1,c("city_id","merchant_category_id","merchant_id","state_id","subsector_id"), 
+                 funs(n_distinct,mode = mlv(., method='mfv')[['M']])),
+    by = "card_id") %>% 
+  # installments~
+  left_join(
+    summarise_at(tmp1,vars(starts_with("installments_")), funs(sum)),
+    by = "card_id") %>% 
+  left_join(
+    summarise_at(tmp1, "installments", funs(mean(.,na.rm=TRUE),sum(.,na.rm=TRUE),sd(.,na.rm = TRUE))) %>% 
+      rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c("installments_",.,sep="")),
+    by = "card_id") %>% 
+  # month_lag
+  left_join(
+    summarise_at(tmp1, "month_lag", funs(mean,sd)) %>% 
+      rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c("month_lag_",.,sep="")),
+    by = "card_id") %>%
+  # フラッグ
+  left_join(
+    summarise_at(tmp1, vars(starts_with("authorized_flag")), funs(mean,sum)),
+    by = "card_id") %>% 
+  # 購入金額について
+  left_join(
+    summarise_at(tmp1, vars(starts_with("purchase")), funs(mean,sum,sd)),
+    by = "card_id") %>% 
+  # お店のカテゴリ
+  left_join(
+    summarise_at(tmp1, vars(starts_with("category")), funs(mean(na.rm=TRUE),sum(na.rm=TRUE))),
+    by = "card_id")
+
+
+
+
+  
   
 
-summarise_at(vars(starts_with("category")), funs(mean,sum)) # お店のカテゴリ
-summarise_at(vars(ends_with("id")), funs(n_distinct)) # 各種idのカウント, NAも1種とする.
 
 
   
