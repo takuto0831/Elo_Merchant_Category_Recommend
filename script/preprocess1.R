@@ -47,6 +47,7 @@ tmp <- bind_cols(tmp %>% select(-c(category_2,category_3)),
                  makedummies(dat = tmp,basal_level = TRUE,col = c("category_2","category_3"))) 
 
 # aggregate
+mode <- function(col) mlv(col,method='mfv',na.rm = TRUE)[1]
 tmp1 <- tmp %>% group_by(card_id) 
 tmp2 <- 
   # 会計回数
@@ -54,11 +55,11 @@ tmp2 <-
   # 各種idのカウント, NAも1種とする. 
   left_join(
     summarise_at(tmp1,c("city_id","merchant_category_id","merchant_id","state_id","subsector_id"), 
-                 funs(n_distinct,mlv(.,method='mfv')[1])),
+                 funs(n_distinct,mode)),
     by = "card_id") %>% 
   # installments~
   left_join(
-    summarise_at(tmp1,vars(starts_with("installments_")), funs(sum)),
+    summarise_at(tmp1,vars(starts_with("installments_")), funs(sum,mean)),
     by = "card_id") %>% 
   left_join(
     summarise_at(tmp1, "installments", funs(mean(.,na.rm=TRUE),sum(.,na.rm=TRUE),sd(.,na.rm = TRUE))) %>% 
@@ -66,7 +67,7 @@ tmp2 <-
     by = "card_id") %>% 
   # month_lag
   left_join(
-    summarise_at(tmp1, "month_lag", funs(mean,sd)) %>% 
+    summarise_at(tmp1, "month_lag", funs(max,min,mean,sd)) %>% 
       rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c("month_lag_",.,sep="")),
     by = "card_id") %>%
   # フラッグ
@@ -76,7 +77,7 @@ tmp2 <-
     by = "card_id") %>% 
   # 購入金額について
   left_join(
-    summarise_at(tmp1, vars(starts_with("purchase")), funs(mean,sum,sd)),
+    summarise_at(tmp1, vars(starts_with("purchase")), funs(max,min,mean,sum,sd)),
     by = "card_id") %>% 
   # お店のカテゴリ
   left_join(
