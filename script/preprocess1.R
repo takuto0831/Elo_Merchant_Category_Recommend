@@ -4,6 +4,7 @@ library(lubridate)
 library(feather)
 library(anytime)
 library(makedummies)
+# devtools::install_github("paulponcet/modeest")
 library(modeest)
 
 # read data
@@ -46,6 +47,7 @@ tmp <- bind_cols(tmp %>% select(-c(category_2,category_3)),
                  makedummies(dat = tmp,basal_level = TRUE,col = c("category_2","category_3"))) 
 
 # aggregate
+mode <- function(col) return(mlv(col, method='mfv'))
 tmp1 <- tmp %>% group_by(card_id) 
 tmp2 <- 
   # 会計回数
@@ -53,7 +55,7 @@ tmp2 <-
   # 各種idのカウント, NAも1種とする. 
   left_join(
     summarise_at(tmp1,c("city_id","merchant_category_id","merchant_id","state_id","subsector_id"), 
-                 funs(n_distinct,mode = mlv(., method='mfv')[['M']])),
+                 funs(n_distinct,mlv(.,method='mfv')[1])),
     by = "card_id") %>% 
   # installments~
   left_join(
