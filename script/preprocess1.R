@@ -71,7 +71,8 @@ tmp2 <-
     by = "card_id") %>%
   # フラッグ
   left_join(
-    summarise_at(tmp1, vars(starts_with("authorized_flag")), funs(mean,sum)),
+    summarise_at(tmp1, vars(starts_with("authorized_flag")), funs(mean,sum)) %>% 
+      rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c("authorized_flag_",.,sep="")),
     by = "card_id") %>% 
   # 購入金額について
   left_join(
