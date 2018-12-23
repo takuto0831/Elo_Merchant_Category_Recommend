@@ -126,10 +126,30 @@ train %>%
 
 - month_lag, purchase_dateの関係性
 
+dateはいいとして, lagはいつのとの差??
+
+```{r}
+library(anytime)
+transactions %>% 
+  select(month_lag,purchase_date) %>% 
+  mutate(lag = anytime("2018-02-28") - purchase_date) %>% 
+  mutate(lag1 = as.numeric(lag,"hours")) %>% 
+  head(1000000) %>% 
+  ggplot(aes(x=lag1,y = month_lag)) +
+  geom_point()
+```
+
+- purchase_amount
+
+正規化された購入金額??(1つ大きな外れ値), 周期性がある. 
+
 ```{r}
 transactions %>% 
-  ggplot(aes(x=purchase_date,y=month_lag)) +
-  geom_point()
+  filter(purchase_amount < 200000) %>% 
+  group_by(hours = floor_date(purchase_date,"hour")) %>% 
+  summarise(money = mean(purchase_amount)) %>% 
+  ggplot(aes(x=hours,y=money)) +
+  geom_line()
 ```
 
 
