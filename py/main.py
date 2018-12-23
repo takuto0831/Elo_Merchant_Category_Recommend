@@ -1,0 +1,19 @@
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import feather
+from models.Ridge_Regressor import Ridge_Regressor 
+
+def main():
+  #Loading Train and Test Data
+  train = feather.read_dataframe("/Users/takuto/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
+  test = feather.read_dataframe("/Users/takuto/Desktop/Elo_kaggle/input/processed/test_20181223.feather")
+  print("{} observations and {} features in train set.".format(train.shape[0],train.shape[1]))
+  print("{} observations and {} features in test set.".format(test.shape[0],test.shape[1]))
+  # data set
+  target = train['target']
+  del train['target']
+  features = [c for c in train.columns if c not in ['card_id', 'outliers']]
+  # Ridge
+  val_pred_ridge, test_pred_ridge = Ridge_Regressor(train,target,test,features)
+if __name__ == "__main__":
+    main()
