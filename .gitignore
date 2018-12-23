@@ -5,3 +5,4 @@ input/processed
 .Rhistory
 py/__pycache__
 py/models/__pycache__
+output
