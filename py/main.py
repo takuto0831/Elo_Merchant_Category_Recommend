@@ -1,7 +1,9 @@
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import feather
+from datetime import datetime
 from models.Ridge_Regressor import Ridge_Regressor 
+from sklearn.metrics import mean_squared_error
 
 def submit(predict,tech):
   # make submit file
@@ -9,7 +11,7 @@ def submit(predict,tech):
   submit_file["target"] = predict
   # save for output/(technic name + datetime + .csv)
   file_name = '/Users/takuto/Desktop/Elo_kaggle/output/' + tech + datetime.now().strftime("%Y%m%d") + ".csv"
-  sample_submission.to_csv(file_name, index=False)
+  submit_file.to_csv(file_name, index=False)
 def main():
   #Loading Train and Test Data
   train = feather.read_dataframe("/Users/takuto/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
@@ -22,8 +24,8 @@ def main():
   features = [c for c in train.columns if c not in ['card_id', 'outliers']]
   # Ridge
   val_pred_ridge, test_pred_ridge = Ridge_Regressor(train,target,test,features)
-  # print validation error 
-  print("Ridge regression validation error: %.4f" % np.sqrt(mean_squared_error(target.values, val_pred_ridge)))
+  # print validation RMSE 
+  print("Ridge regression validation RMSE: %.4f" % np.sqrt(mean_squared_error(target.values, val_pred_ridge)))
   # submit file
   submit(test_pred_ridge,"Ridge")
 if __name__ == "__main__":
