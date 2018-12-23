@@ -3,3 +3,4 @@ input/feather
 input/processed
 .Rproj.user
 .Rhistory
+py/__pycache__
