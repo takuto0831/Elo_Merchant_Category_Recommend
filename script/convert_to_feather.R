@@ -24,6 +24,30 @@ sample_submit <- read_csv("~/Desktop/Elo_kaggle/input/original/sample_submission
                           na = c("XNA","NA","","NaN","?")) %>% 
   mutate_if(is.character, funs(factor(.))) 
 
+# label encoding
+# merchant_idについてnumeric型のidにする
+merchants <- merchants %>% 
+  mutate(merchant_label_id = as.numeric(merchant_id)) %>% 
+  select(merchant_id,merchant_label_id,everything()) 
+transactions <- transactions %>% 
+  left_join(
+    merchants %>% 
+      select(merchant_id,merchant_label_id) %>% 
+      distinct(merchant_label_id,.keep_all = TRUE),
+    by = "merchant_id") %>% 
+  select(authorized_flag, card_id, city_id, category_1,installments,
+         category_3,merchant_category_id,merchant_id,merchant_label_id,everything()) %>% 
+  mutate(merchant_id = merchant_id %>% as.factor())
+new_transactions <- new_transactions %>% 
+  left_join(
+    merchants %>% 
+      select(merchant_id,merchant_label_id) %>% 
+      distinct(merchant_label_id,.keep_all = TRUE),
+    by = "merchant_id") %>% 
+  select(authorized_flag, card_id, city_id, category_1,installments,
+         category_3,merchant_category_id,merchant_id,merchant_label_id,everything()) %>% 
+  mutate(merchant_id = merchant_id %>% as.factor())
+
 # convert to feather file
 write_feather(train, "~/Desktop/Elo_kaggle/input/feather/train.feather")
 write_feather(test, "~/Desktop/Elo_kaggle/input/feather/test.feather")
