@@ -4,8 +4,6 @@ library(lubridate)
 library(feather)
 library(anytime)
 library(makedummies)
-# devtools::install_github("paulponcet/modeest")
-library(modeest)
 
 # read data
 train <- read_feather("~/Desktop/Elo_kaggle/input/feather/train.feather")
@@ -27,6 +25,23 @@ test <- test %>%
 ## transaction_history and new_transaction_history
 # function
 aggregate_transactions <- function(data){
+  # mode function
+  mode <- function(data,col){
+    # new col names
+    new_col = paste(col,"_mode",sep="")
+    # main
+    data %>% 
+      group_by_("card_id",col) %>% 
+      summarise(count = n()) %>% 
+      group_by_("card_id") %>% 
+      top_n(n=1,wt=count) %>% 
+      distinct(card_id,.keep_all =TRUE) %>% 
+      ungroup() %>% 
+      dplyr::select("card_id", col) %>%
+      rename(!!new_col := col) %>% 
+      return()
+  }
+  # convert data
   tmp <- 
     # flag, category1: 0 or 1に変更, category_2: factor typeに変更
     data %>% 
@@ -43,22 +58,28 @@ aggregate_transactions <- function(data){
     mutate(purchase_amount_diff = purchase_amount - mean(purchase_amount),
            purchase_amount_abs = abs(purchase_amount - mean(purchase_amount))) %>% 
     ungroup() %>% 
-    select(-purchase_date)
+    # 日付情報, factorのid情報を削除
+    select(-c(merchant_id, purchase_date))
   # お店カテゴリー(one hot encoding)
   tmp <- bind_cols(tmp %>% select(-c(category_2,category_3)),
                    makedummies(dat = tmp,basal_level = TRUE,col = c("category_2","category_3"))) 
 
   # aggregate
-  mode <- function(col) mlv(col,method='mfv',na.rm = TRUE)[1]
   tmp1 <- tmp %>% group_by(card_id) 
+  # main 
   tmp2 <- 
     # 会計回数
     summarise(tmp1, pay_count = n()) %>% 
     # 各種idのカウント, NAも1種とする. 
     left_join(
-      summarise_at(tmp1,c("city_id","merchant_category_id","merchant_id","state_id","subsector_id"), 
-                   funs(n_distinct,mode)),
-      by = "card_id") %>% 
+      summarise_at(tmp1,c("city_id","merchant_category_id","merchant_label_id","state_id","subsector_id"), 
+                   funs(n_distinct)),
+      by = "card_id") %>%
+    left_join(tmp %>% mode(col="city_id"),by = "card_id") %>% 
+    left_join(tmp %>% mode(col="merchant_category_id"),by = "card_id") %>% 
+    left_join(tmp %>% mode(col="merchant_label_id"),by = "card_id") %>% 
+    left_join(tmp %>% mode(col="state_id"),by = "card_id") %>% 
+    left_join(tmp %>% mode(col="subsector_id"),by = "card_id") %>%     
     # installments~
     left_join(
       summarise_at(tmp1,vars(starts_with("installments_")), funs(sum,mean)),
@@ -85,14 +106,11 @@ aggregate_transactions <- function(data){
     left_join(
       summarise_at(tmp1, vars(starts_with("category")), funs(mean(.,na.rm=TRUE),sum(.,na.rm=TRUE))),
       by = "card_id")
+  # numeric変数を小数点第4位までとする
+  tmp2 <- tmp2 %>% mutate_if(is.numeric, round, 4)
+  return(tmp2)
 }
 # execute
 transactions <- aggregate_transactions(transactions)
 new_transactions <- aggregate_transactions(new_transactions) %>% 
   rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c("_new",sep="")) # add column "_new"
-
-
-
-
-
-  
