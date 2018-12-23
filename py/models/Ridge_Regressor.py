@@ -33,6 +33,4 @@ def Ridge_Regressor(train,target,test,features):
     # predicting validation data and predicting data
     val_pred_ridge[val_idx] = clf.predict(val_data)
     test_pred_ridge += clf.predict(test_data) / folds.n_splits
-  # print validation error 
-  print("validation error{}", np.sqrt(mean_squared_error(target.values, val_pred_ridge)))
   return val_pred_ridge, test_pred_ridge
