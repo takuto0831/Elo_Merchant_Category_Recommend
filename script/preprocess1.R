@@ -47,7 +47,6 @@ tmp <- bind_cols(tmp %>% select(-c(category_2,category_3)),
                  makedummies(dat = tmp,basal_level = TRUE,col = c("category_2","category_3"))) 
 
 # aggregate
-mode <- function(col) return(mlv(col, method='mfv'))
 tmp1 <- tmp %>% group_by(card_id) 
 tmp2 <- 
   # 会計回数
@@ -80,7 +79,7 @@ tmp2 <-
     by = "card_id") %>% 
   # お店のカテゴリ
   left_join(
-    summarise_at(tmp1, vars(starts_with("category")), funs(mean(na.rm=TRUE),sum(na.rm=TRUE))),
+    summarise_at(tmp1, vars(starts_with("category")), funs(mean(.,na.rm=TRUE),sum(.,na.rm=TRUE))),
     by = "card_id")
 
 
