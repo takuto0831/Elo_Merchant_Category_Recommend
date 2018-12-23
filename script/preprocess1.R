@@ -1,29 +1,30 @@
-# package
+### package ###
 library(tidyverse)
 library(lubridate)
 library(feather)
 library(anytime)
 library(makedummies)
 
-# read data
+### read data ###
 train <- read_feather("~/Desktop/Elo_kaggle/input/feather/train.feather")
 test <- read_feather("~/Desktop/Elo_kaggle/input/feather/test.feather")
 transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/historical_transactions.feather")
 new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/new_merchant_transactions.feather")
 merchants <- read_feather("~/Desktop/Elo_kaggle/input/feather/merchants.feather")
 
-# Feature engineering
-## train, test
+#### Feature engineering ####
+# train data and test data
 train <- train %>% 
   mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
   mutate(diff = diff %>% as.numeric()) %>% 
+  mutate(outliers = if_else(target < -30,1,0)) %>% # クロスバリデーションで使用
   select(-first_active_month)
 test <- test %>% 
   mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
   mutate(diff = diff %>% as.numeric()) %>% 
   select(-first_active_month)
-## transaction_history and new_transaction_history
-# function
+# transaction_history and new_transaction_history
+### function ###
 aggregate_transactions <- function(data){
   # mode function
   mode <- function(data,col){
@@ -110,7 +111,21 @@ aggregate_transactions <- function(data){
   tmp2 <- tmp2 %>% mutate_if(is.numeric, round, 4)
   return(tmp2)
 }
-# execute
+## execute
 transactions <- aggregate_transactions(transactions)
 new_transactions <- aggregate_transactions(new_transactions) %>% 
   rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c("_new",sep="")) # add column "_new"
+
+# merchants data (データに問題あるため保留)
+
+### combine data ### 
+train <- train %>% 
+  left_join(transactions,by="card_id") %>% 
+  left_join(new_transactions, by="card_id")
+test <- test %>% 
+  left_join(transactions,by="card_id") %>% 
+  left_join(new_transactions, by="card_id")
+
+### save combine data ###
+write_feather(train,"~/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
+write_feather(test,"~/Desktop/Elo_kaggle/input/processed/test_20181223.feather")
