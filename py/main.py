@@ -1,8 +1,8 @@
 import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import feather
+import pandas as pd # data processing
+import feather # fast reading data
 from datetime import datetime
-from models.Regressor import Ridge_Regressor 
+from models.Regressor import Ridge_Regressor, Lasso_Regressor, Bagging_Regressor
 from sklearn.metrics import mean_squared_error
 
 def read_data(train_name,test_name,features_name):
@@ -30,13 +30,21 @@ def submit(predict,tech):
 
 def main():
   # read file
-  train_name = "train_20181223"; test_name = "train_20181223"; features_name = "features_20181223";
+  train_name = "train_20181223"; test_name = "test_20181223"; features_name = "features_20181223";
   train, test, features, target = read_data(train_name,test_name,features_name)
   # Ridge regression
-  val_pred_ridge, test_pred_ridge = Ridge_Regressor(train,target,test,features) 
+  val_pred_ridge, test_pred_ridge = Ridge_Regressor(train,test,features,target) 
+  # Lasso regression
+  val_pred_lasso, test_pred_lasso = Lasso_Regressor(train,test,features,target) 
+  # Ensemble regression (bagging)
+  val_pred_bag, test_pred_bag = Bagging_Regressor(train,test,features,target) 
   # print validation RMSE 
   print("Ridge regression validation RMSE: %.4f" % np.sqrt(mean_squared_error(target.values, val_pred_ridge)))
+  print("Lasso regression validation RMSE: %.4f" % np.sqrt(mean_squared_error(target.values, val_pred_lasso)))
+  print("Bagging regression validation RMSE: %.4f" % np.sqrt(mean_squared_error(target.values, val_pred_bag)))
   # submit file
   submit(test_pred_ridge,"Ridge")
+  submit(test_pred_lasso,"Lasso")
+  submit(test_pred_bag,"Bagging")
 if __name__ == "__main__":
     main()
