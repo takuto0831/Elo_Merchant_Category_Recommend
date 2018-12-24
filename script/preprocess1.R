@@ -59,8 +59,7 @@ aggregate_transactions <- function(data){
     mutate(purchase_amount_diff = purchase_amount - mean(purchase_amount),
            purchase_amount_abs = abs(purchase_amount - mean(purchase_amount))) %>% 
     ungroup() %>% 
-    # 日付情報, factorのid情報を削除
-    select(-c(merchant_id, purchase_date))
+
   # お店カテゴリー(one hot encoding)
   tmp <- bind_cols(tmp %>% select(-c(category_2,category_3)),
                    makedummies(dat = tmp,basal_level = TRUE,col = c("category_2","category_3"))) 
@@ -126,6 +125,16 @@ test <- test %>%
   left_join(transactions,by="card_id") %>% 
   left_join(new_transactions, by="card_id")
 
-### save combine data ###
+### extract features ### 
+features <- train %>% 
+  # 日付情報, factorのid情報を削除
+  # select(-c(merchant_id, purchase_date)) %>% 
+  select(-c(card_id,outliers,target)) %>% 
+  colnames() %>% 
+  data.frame(feature = .)
+
+### save combine data and features ###
+# train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
 write_feather(train,"~/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
 write_feather(test,"~/Desktop/Elo_kaggle/input/processed/test_20181223.feather")
+write_feather(features, "~/Desktop/Elo_kaggle/input/processed/features_20181223.feather")
