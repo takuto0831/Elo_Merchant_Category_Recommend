@@ -5,6 +5,8 @@ from sklearn.linear_model import Ridge
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
 
+def Validation(k):
+  return StratifiedKFold(n_splits=k, shuffle=True, random_state=15)
 def Ridge_Regressor(train,target,test,features):
   # model
   ## predict data box
@@ -14,8 +16,8 @@ def Ridge_Regressor(train,target,test,features):
   test_data = test.copy()
   test_data.fillna((test_data.mean()), inplace=True)
   test_data = test_data[features].values
-  ## 5-クロスバリデーション
-  folds = StratifiedKFold(n_splits=5, shuffle=True, random_state=15)
+  ## k-stratified k-Fold
+  folds = Validation(5)
   ## 実行
   # 外れ値を考慮して, データを分割する
   for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].values)):
