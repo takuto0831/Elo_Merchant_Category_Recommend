@@ -35,7 +35,7 @@ def Regressors(clf,train,test,features,target,folds=5):
         # extract data
         trn_data = trn_data.values; val_data = val_data.values;
         # fitting arvitrary model for train data
-        clf = Ridge(alpha=100); clf.fit(trn_data, trn_y);
+        clf.fit(trn_data, trn_y);
         # predicting validation data and predicting data
         validation_pred[val_idx] = clf.predict(val_data)
         test_pred += clf.predict(test_data) / folds.n_splits
