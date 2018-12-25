@@ -18,11 +18,11 @@ def Regressors(algorithm,param_set,train,test,features,target,folds=5):
     for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].values)):
         print("fold n°{}".format(fold_+1))
         # make model
-        validation_pred, test_pred, model = algorithm(train,trn_idx,val_idx,features,target,param_set, \
-                                                      validation_pred,test_pred)
+        validation_pred, test_pred, model = algorithm(train,test,trn_idx,val_idx,features,target,param_set, \
+                                                      folds,validation_pred,test_pred)
     return validation_pred, test_pred, model
     
-def Lightgbm_Regressor(train,trn_idx,val_idx,features,target,param_set,validation_pred,test_pred):
+def Lightgbm_Regressor(train,test,trn_idx,val_idx,features,target,param_set,folds,validation_pred,test_pred):
     # data set
     trn_data = lgb.Dataset(train.iloc[trn_idx][features], label=target.iloc[trn_idx])
     val_data = lgb.Dataset(train.iloc[val_idx][features], label=target.iloc[val_idx])
@@ -34,7 +34,7 @@ def Lightgbm_Regressor(train,trn_idx,val_idx,features,target,param_set,validatio
     test_pred += model.predict(test[features], num_iteration=model.best_iteration) / folds.n_splits
     return validation_pred, test_pred, model
 
-def Xgboost_Regressor(train,trn_idx,val_idx,features,target,param_set,validation_pred,test_pred):
+def Xgboost_Regressor(train,test,trn_idx,val_idx,features,target,param_set,folds,validation_pred,test_pred):
     # data set
     trn_data = xgb.DMatrix(data=train.iloc[trn_idx][features], label=target.iloc[trn_idx])
     val_data = xgb.DMatrix(data=train.iloc[val_idx][features], label=target.iloc[val_idx])
