@@ -29,7 +29,7 @@ def Lightgbm_Regressor(train,trn_idx,val_idx,features,target,param_set):
     trn_data = lgb.Dataset(train.iloc[trn_idx][features], label=target.iloc[trn_idx])
     val_data = lgb.Dataset(train.iloc[val_idx][features], label=target.iloc[val_idx])
     # model
-    model = lgb.train(param_set, trn_data, num_round=10000, valid_sets = [trn_data, val_data], 
+    model = lgb.train(param_set, trn_data, num_boost_round=10000, valid_sets = [trn_data, val_data], 
                       verbose_eval=100, early_stopping_rounds=200)
     return val_idx, model
 
