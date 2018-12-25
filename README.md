@@ -62,18 +62,26 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 │   │   ├── test.csv
 │   │   └── train.csv
 │   └── processed
-│       ├── test_20181223.feather
-│       └── train_20181223.feather
 ├── jn
-│   └── Kaggle_kernel_tunguz.ipynb
+│   ├── Kaggle_kernel_tunguz.ipynb
+│   └── main.ipynb
 ├── output
+│   ├── Bagging20181224.csv
+│   ├── Lasso20181224.csv
+│   └── Ridge20181224.csv
 ├── py
 │   ├── __pycache__
 │   │   └── models.cpython-36.pyc
 │   ├── main.py
 │   └── models
-│       ├── Ridge_Regressor.py
+│       ├── Ensemble.py
+│       ├── GradientBoosting.py
+│       ├── Regressor.py
+│       ├── __init__.py
 │       └── __pycache__
+│           ├── Boosting.cpython-36.pyc
+│           ├── GradientBoosting.cpython-36.pyc
+│           ├── Regressor.cpython-36.pyc
 │           └── Ridge_Regressor.cpython-36.pyc
 ├── rmd
 │   ├── EDA.Rmd
