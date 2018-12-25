@@ -1,6 +1,7 @@
 import numpy as np # linear algebra
 import pandas as pd # data processing
 import feather # fast reading data
+import os
 from datetime import datetime
 from models.Regressor import Ridge_Regressor, Lasso_Regressor, Bagging_Regressor
 from sklearn.metrics import mean_squared_error
@@ -45,6 +46,5 @@ def main():
     submit(test_pred_lasso,"Lasso")
     submit(test_pred_bag,"Bagging")
 if __name__ == "__main__":
-    home_path = '/Users/takutokotsubo' # for imac
-    # home_path = '/Users/takuto' # for air
+    home_path = os.path.expanduser("~")
     main()
