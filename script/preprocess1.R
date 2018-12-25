@@ -17,12 +17,13 @@ merchants <- read_feather("~/Desktop/Elo_kaggle/input/feather/merchants.feather"
 train <- train %>% 
   mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
   mutate(diff = diff %>% as.numeric()) %>% 
-  mutate(outliers = if_else(target < -30,1,0)) %>% # クロスバリデーションで使用
-  select(-first_active_month)
+  mutate(target_class = 
+           case_when(target < -30 ~ 1,
+                     target >= 0 ~ 3,
+                     TRUE ~ 2)) # クロスバリデーションで使用
 test <- test %>% 
   mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
-  mutate(diff = diff %>% as.numeric()) %>% 
-  select(-first_active_month)
+  mutate(diff = diff %>% as.numeric()) 
 # transaction_history and new_transaction_history
 ### function ###
 aggregate_transactions <- function(data){
@@ -128,8 +129,7 @@ test <- test %>%
 ### extract features ### 
 features <- train %>% 
   # 日付情報, factorのid情報を削除
-  # select(-c(merchant_id, purchase_date)) %>% 
-  select(-c(card_id,outliers,target)) %>% 
+  select(-c(card_id,merchant_id, purchase_date,first_active_month,target,target_class)) %>% 
   colnames() %>% 
   data.frame(feature = .)
 

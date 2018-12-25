@@ -25,7 +25,7 @@ def Regressors(clf,train,test,features,target,folds=5):
     ## k-stratified k-Fold
     folds = Validation(folds)
     # 外れ値を考慮して, データを分割する
-    for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['outliers'].values)):
+    for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['target_class'].values)):
         print("fold n°{}".format(fold_+1))
         trn_data, trn_y = train.iloc[trn_idx][features], target.iloc[trn_idx].values
         val_data, val_y = train.iloc[val_idx][features], target.iloc[val_idx].values
