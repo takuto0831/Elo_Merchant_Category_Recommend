@@ -12,25 +12,31 @@ transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/historical_tran
 new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/new_merchant_transactions.feather")
 merchants <- read_feather("~/Desktop/Elo_kaggle/input/feather/merchants.feather")
 
-#### Feature engineering ####
-# train data and test data
-train <- train %>% 
-  mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
-  mutate(diff = diff %>% as.numeric()) %>% 
+####################### Feature engineering #########################
+#!!!!!!!!!!!!! train data and test data !!!!!!!!!!!!!#
+# function
+aggregate_train <- function(data){
+  data %>% 
+    mutate(diff = anytime("2018-02-01") - anytime(first_active_month)) %>% # 時間差
+    mutate(diff = diff %>% as.numeric(),
+           feature_multi = feature_1 * feature_2 * feature_3,
+           feature_sum = feature_1 + feature_2 + feature_3) %>% 
+    return()
+}
+# main
+train <- train %>%
+  aggregate_train %>% 
   mutate(target_class = 
-           case_when(target < -30 ~ 1,
-                     target >= 0 ~ 3,
-                     TRUE ~ 2)) # クロスバリデーションで使用
+           case_when(target < -30 ~ 1,target >= 0 ~ 3,TRUE ~ 2)) # クロスバリデーションで使用
 test <- test %>% 
-  mutate(diff = anytime("2018-02-02") - anytime(first_active_month)) %>% # 時間差
-  mutate(diff = diff %>% as.numeric()) 
-# transaction_history and new_transaction_history
+  aggregate_train 
+
+#!!!!!!!!!!!!! transaction_history and new_transaction_history !!!!!!!!!!!!!#
 ### function ###
-aggregate_transactions <- function(data){
+aggregate_transactions <- function(data){ 
   # mode function
-  mode <- function(data,col){
-    # new col names
-    new_col = paste(col,"_mode",sep="")
+  mode <- function(data,col){ 
+    new_col = paste(col,"_mode",sep="") # new col names
     # main
     data %>% 
       group_by_("card_id",col) %>% 
@@ -121,14 +127,17 @@ new_transactions <- aggregate_transactions(new_transactions) %>%
 ### combine data ### 
 train <- train %>% 
   left_join(transactions,by="card_id") %>% 
-  left_join(new_transactions, by="card_id")
+  left_join(new_transactions, by="card_id") %>% 
+  mutate(data_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
+
 test <- test %>% 
   left_join(transactions,by="card_id") %>% 
-  left_join(new_transactions, by="card_id")
+  left_join(new_transactions, by="card_id") %>% 
+  mutate(data_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
 ### extract features ### 
 features <- train %>% 
-  # 日付情報, factorのid情報を削除
+  # 特徴量として扱わないカラム
   select(-c(card_id,merchant_id, purchase_date,first_active_month,target,target_class)) %>% 
   colnames() %>% 
   data.frame(feature = .)
