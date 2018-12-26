@@ -36,6 +36,7 @@ library(tidyverse)
 library(summarytools) # summary easily for EDA
 library(skimr)
 library(feather)
+library(lubridate)
 ```
 
 ## Load funciton
@@ -124,19 +125,51 @@ train %>%
 
 ## transaction
 
-- month_lag, purchase_dateの関係性
+- purchase_date
 
-dateはいいとして, lagはいつのとの差??
+3ヶ月以上ない??
 
 ```{r}
-library(anytime)
-transactions %>% 
-  select(month_lag,purchase_date) %>% 
-  mutate(lag = anytime("2018-02-28") - purchase_date) %>% 
-  mutate(lag1 = as.numeric(lag,"hours")) %>% 
-  head(1000000) %>% 
-  ggplot(aes(x=lag1,y = month_lag)) +
-  geom_point()
+tmp <- transactions %>% 
+  group_by(card_id) %>% 
+  summarise(interval =  max(purchase_date) - min(purchase_date))
+tmp %>% 
+  mutate(interval = interval %>% as.numeric() %/% 30) %>% 
+  group_by(interval) %>% 
+  summarise(count = n()) %>% 
+  t() %>% 
+  as.data.frame() %>% 
+  kable(format="markdown")
+```
+
+- month_lag
+
+```{r}
+# month_lagの出現回数
+tmp <- transactions %>% 
+  distinct(card_id, month_lag) %>% 
+  group_by(month_lag) %>% 
+  summarise(num = n())
+as.data.frame(t(tmp)) %>% kable(format="markdown")
+
+# card_idごとの最新のmonth_lag情報
+tmp <- transactions %>% 
+  group_by(card_id) %>% 
+  summarise(max = max(month_lag), min = min(month_lag))
+# maxの集計
+tmp %>% 
+  group_by(max) %>% 
+  summarise(count=n()) %>%
+  t() %>% 
+  as.data.frame() %>% 
+  kable(format="markdown")
+# minの集計
+tmp %>% 
+  group_by(min) %>% 
+  summarise(count=n()) %>%
+  t() %>% 
+  as.data.frame() %>% 
+  kable(format="markdown")
 ```
 
 - purchase_amount
