@@ -1,8 +1,8 @@
 # Elo_Merchant_Category_Recommendation_Kaggle
 
-Diners Club(クレジットカード)
+key word: Diners Club, Loyality score
 
-## Overview
+## Overview (kaggle 翻訳)
 
 "知らない街でお腹が空いた時, 瞬時に個人の好みに基づいたレストランのレコメンドを得る. お勧めは, コーナーの近くの地元の場所にあなたのクレジットカード会社からの添付割引が付属しています！"
 
@@ -18,7 +18,7 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 <img src="https://latex.codecogs.com/gif.latex?\centering&space;\mbox{RMSE}&space;=&space;\sqrt{\frac{1}{n}\sum_{i=1}^n(y_i&space;-&space;\hat{y}_i)^2}"/>
 
-## Data
+## Data (kaggle data概要 + kaggle discussion)
 
 - train.csv,test.csv:
 
@@ -26,11 +26,11 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 - historical_transactions.csv, new_merchant_transactions.csv:
 
-それそれのカードにおける取引情報を含み, 前者は3ヶ月間の全てのカードの`merchant_id`ごとの取引情報を含み, 後者は新しい加盟店との取引情報(任意のカードにおいてまだ訪問されていない`merchant_id`)が2ヶ月間含まれている.
+それそれのカードにおける取引情報を含み, 前者は3ヶ月間の全てのカードの`card_id`ごとの取引情報を含み, 後者は新しい加盟店との取引情報(任意のカードにおいてまだ訪問されていない`merchant_id`)が2ヶ月間含まれている.
 
 - merchants.csv:
 
-それぞれの`merchant_id`に関する情報を含む.
+それぞれの`merchant_id`に関する諸情報
 
 - Data_Dictionary.xlsx:
 
@@ -38,7 +38,7 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 ## Purpose
 
-このコンペティションでは, 顧客ロイヤリティのシグナルを明らかにすることによって, 個人に最も関連のある機会を特定して提供するアルゴリズムを開発する. 顧客の生活を向上し, "Elo"が不必要なキャンペーンを行うのを減らし, 顧客に正しい経験を生み出す. 
+このコンペティションでは, 顧客ロイヤリティのシグナルを明らかにすることによって, 個人に最も関連のある機会を特定して提供するアルゴリズムを開発する. 顧客の生活を向上し, "Elo"が不必要なキャンペーンを行うのを減らし, 顧客に正しい経験を生み出す. `target`列は顧客の2ヶ月後の満足度を表す!!
 
 # Directory
 
