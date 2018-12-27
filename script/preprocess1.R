@@ -53,7 +53,7 @@ aggregate_transactions <- function(data){
   tmp <- 
     # flag, category1: 0 or 1に変更, category_2: factor typeに変更
     data %>% 
-    mutate(authorized_flag = if_else(authorized_flag == "Y",1,0), 
+    mutate(authorized_flag = if_else(authorized_flag == "Y",0,1), 
            category_1 = if_else(category_1 == "Y",1,0)) %>% 
     mutate(category_2 = category_2 %>% as.factor()) %>% 
     # 支払い分割数 (-1, 999の処理)

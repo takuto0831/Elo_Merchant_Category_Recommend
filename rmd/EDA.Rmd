@@ -123,6 +123,20 @@ train %>%
   geom_histogram(bins = 200)
 ```
 
+- target and features
+
+```{r}
+train %>% 
+  ggplot() +
+  geom_point(aes(x=feature_1,y=target),color="blue") 
+train %>% 
+  ggplot() +
+  geom_point(aes(x=feature_2,y=target),color="blue") 
+train %>% 
+  ggplot() +
+  geom_point(aes(x=feature_3,y=target),color="blue") 
+```
+
 ## transaction
 
 - purchase_date
@@ -183,6 +197,19 @@ transactions %>%
   summarise(money = mean(purchase_amount)) %>% 
   ggplot(aes(x=hours,y=money)) +
   geom_line()
+```
+
+### month_lagとpurchase_dateを使えば, 基準日が求められる??
+
+```{r}
+transactions %>% 
+  group_by(card_id) %>% 
+  top_n(1,wt=purchase_date) %>% 
+  distinct(card_id,.keep_all = TRUE)
+  mutate(reference_date = purchase_date %m+% months(abs(month_lag))) %>% 
+  mutate(year = year(reference_date), month = month(reference_date)) %>% 
+  mutate(diff = case_when(year == 2018 ~ 2-month, TRUE ~ 14 - month)) %>% 
+  View
 ```
 
 ## merchants
