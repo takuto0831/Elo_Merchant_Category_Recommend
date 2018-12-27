@@ -185,4 +185,105 @@ transactions %>%
   geom_line()
 ```
 
-## merchant_id
+## merchants
+
+- city_idがずれている??
+
+```{r}
+# merchant_id
+transactions %>% distinct(merchant_id) %>% View
+new_transactions %>% distinct(merchant_id) %>% View
+merchants %>% distinct(merchant_id) %>% View
+# city_id
+transactions %>% distinct(city_id) %>% View
+new_transactions %>% distinct(city_id) %>% View
+merchants %>% distinct(city_id) %>% View
+```
+
+- merchant_idは一致している
+
+```{r}
+transactions %>% 
+  left_join(merchants,by="merchant_label_id") %>% summarise(is.na(merchant_label_id) %>% sum)
+new_transactions %>% 
+  left_join(merchants,by="merchant_label_id") %>% summarise(is.na(merchant_label_id) %>% sum)
+```
+
+- merchant_category_id
+
+```{r}
+transactions %>% 
+  left_join(merchants %>% 
+              select(merchant_category_id, numerical_1) %>% 
+              distinct(merchant_category_id, .keep_all = TRUE),by="merchant_category_id") %>% 
+  filter(is.na(numerical_1)) %>% 
+  distinct(merchant_category_id) %>% 
+  View
+new_transactions %>% 
+  left_join(merchants %>% 
+              select(merchant_category_id, numerical_1) %>% 
+              distinct(merchant_category_id, .keep_all = TRUE),by="merchant_category_id") %>% 
+  filter(is.na(numerical_1)) %>% 
+  distinct(merchant_category_id) %>% 
+  View
+```
+
+- subsector_id
+
+```{r}
+transactions %>% 
+  left_join(merchants %>% 
+              select(subsector_id,numerical_1) %>% 
+              distinct(subsector_id, .keep_all = TRUE),by="subsector_id") %>% 
+  summarise(is.na(numerical_1) %>% sum)
+
+new_transactions %>% 
+  left_join(merchants %>% 
+              select(subsector_id,numerical_1) %>% 
+              distinct(subsector_id, .keep_all = TRUE),by="subsector_id") %>% 
+  summarise(is.na(numerical_1) %>% sum)
+```
+
+- city_id
+
+```{r}
+# transaction > merchant
+transactions %>% 
+  left_join(merchants %>% 
+               select(city_id,numerical_1) %>% 
+               distinct(city_id, .keep_all=TRUE),by="city_id") %>% 
+  filter(is.na(numerical_1)) %>%     
+  distinct(city_id) %>% 
+  View
+# merchant > transaction
+transactions %>% 
+  inner_join(merchants %>% 
+               select(city_id,numerical_1) %>% 
+               distinct(city_id, .keep_all=TRUE),by="city_id") %>% 
+  distinct(city_id) %>% 
+  View
+# new_transaction > merchant
+new_transactions %>% 
+  left_join(merchants %>% 
+               select(city_id,numerical_1) %>% 
+               distinct(city_id, .keep_all=TRUE),by="city_id") %>% 
+  filter(is.na(numerical_1)) %>%     
+  distinct(city_id) %>% 
+  View
+```
+
+- state_id
+
+```{r}
+transactions %>% 
+  left_join(merchants %>% 
+               select(state_id,numerical_1) %>% 
+               distinct(state_id, .keep_all=TRUE),by="state_id") %>% 
+  summarise(is.na(numerical_1) %>% sum)
+
+new_transactions %>% 
+  left_join(merchants %>% 
+               select(state_id,numerical_1) %>% 
+               distinct(state_id, .keep_all=TRUE),by="state_id") %>% 
+  summarise(is.na(numerical_1) %>% sum)
+```
