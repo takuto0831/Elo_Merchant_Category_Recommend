@@ -2,6 +2,7 @@ import numpy as np # linear algebra
 import pandas as pd # data processing
 import feather # fast reading data
 from datetime import datetime
+import pickle
 
 def read_data(train_name,test_name,features_name, home_path):
     #Loading Train and Test Data
@@ -24,3 +25,7 @@ def submit(predict,tech, home_path):
     # save for output/(technic name + datetime + .csv)
     file_name = home_path + '/Desktop/Elo_kaggle/output/' + tech + datetime.now().strftime("%Y%m%d") + ".csv"
     submit_file.to_csv(file_name, index=False)
+def open_parameter(file_name, home_path):
+    f = open(home_path + '/Desktop/Elo_kaggle/input/parameters/' + file_name + '.txt', 'rb')
+    list = pickle.load(f)
+    return list
