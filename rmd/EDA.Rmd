@@ -37,6 +37,7 @@ library(summarytools) # summary easily for EDA
 library(skimr)
 library(feather)
 library(lubridate)
+library(anytime)
 ```
 
 ## Load funciton
@@ -202,13 +203,34 @@ transactions %>%
 ### month_lagとpurchase_dateを使えば, 基準日が求められる??
 
 ```{r}
-transactions %>% 
+tmp <- transactions %>% 
   group_by(card_id) %>% 
   top_n(1,wt=purchase_date) %>% 
-  distinct(card_id,.keep_all = TRUE)
-  mutate(reference_date = purchase_date %m+% months(abs(month_lag))) %>% 
-  mutate(year = year(reference_date), month = month(reference_date)) %>% 
-  mutate(diff = case_when(year == 2018 ~ 2-month, TRUE ~ 14 - month)) %>% 
+  distinct(card_id,.keep_all = TRUE) %>% 
+  ungroup()
+  
+tmp %>% 
+  head(100000) %>% 
+  mutate(reference_date = purchase_date %m+% months(abs(month_lag)) ) %>% 
+  mutate(diff = difftime(as.POSIXct("2018-02-28 23:59:59",tz="UTC"), reference_date,
+                         units = "days") %>% as.integer()) %>% 
+  View
+```
+
+### merchant_category_id, city_idの一致について
+
+- merchant_idにおいて, merchant_category_id, city_idはhistory data 内で一致してない
+
+お店のカテゴリーが期間中に変わっている??
+
+```{r}
+transactions %>% 
+  group_by(merchant_id) %>% 
+  summarise(n_distinct(merchant_category_id), n_distinct(city_id)) %>% 
+  View
+merchants %>% 
+  group_by(merchant_id) %>% 
+  summarise(n_distinct(merchant_category_id), n_distinct(city_id)) %>% 
   View
 ```
 
