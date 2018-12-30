@@ -64,6 +64,12 @@ preprocess_history <- function(data){
            purchase_amount_abs = abs(purchase_amount - mean(purchase_amount))) %>% 
     ungroup() %>% 
     select(-hours) %>% 
+    # 会計記録の差分
+    group_by(card_id) %>% 
+    mutate(purchase_date_diff = 
+             difftime(purchase_date, lag(purchase_date, default=0 , order_by=purchase_date),
+                      units = "days") %>% as.integer()) %>% 
+    ungroup() %>% 
     # tmp1を結合
     left_join(tmp1,by="card_id")
   return(tmp)
