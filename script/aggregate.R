@@ -27,7 +27,7 @@ test <- test %>%
          feature_sum = feature_1 + feature_2 + feature_3) 
 
 # history datas and merchants data
-aggregate_history <- function(data1,data2,col_name,add_name){
+aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
@@ -44,12 +44,24 @@ aggregate_history <- function(data1,data2,col_name,add_name){
   ## join history data and merchants data
   tmp <- data1 %>% 
     left_join(data2,by="merchant_label_id") 
+  y <- tmp %>% 
+    select_(one_hot_list[6]) %>% 
+    fastDummies::dummy_cols(select_columns = one_hot_list[6]) %>% 
+    select_(-one_hot_list[6])
+    
+    makedummies(dat = .,basal_level = TRUE)
+  tmp1 <- data.frame(tmp %>% select_(-one_hot_list),y)
+  
+  tmp1 <- left_join(
+      tmp %>% 
+        select(card_id,month_lag,category_1,category_2,category_3,state_id) %>% 
+        makedummies(dat = .,basal_level = TRUE,
+                    col = c("month_lag", "category_1","category_2","category_3","state_id")),
+      by = col_name)
   tmp <- bind_cols(
-    tmp %>% select(-c(month_lag,category_1,category_2,category_3,state_id,subsector_id,
-                      most_recent_sales_range,most_recent_purchases_range,category_4)),
+    tmp %>% select(-c(subsector_id,most_recent_sales_range,most_recent_purchases_range,category_4)),
     makedummies(dat = tmp,basal_level = TRUE,
-                col = c("month_lag", "category_1","category_2","category_3","state_id","subsector_id",
-                        "most_recent_sales_range","most_recent_purchases_range","category_4")))
+                col = c("subsector_id","most_recent_sales_range","most_recent_purchases_range","category_4")))  
   # test code
   tmp <- tmp %>% head(10000)
   # aggregate (binary, category, numeric)
@@ -73,6 +85,8 @@ aggregate_history <- function(data1,data2,col_name,add_name){
     return()
 }
 # main
+one_hot_list <- c("month_lag", "category_1","category_2","category_3","state_id","subsector_id",
+                  "most_recent_sales_range","most_recent_purchases_range","category_4")
 transactions <- aggregate_history(data1 = transactions,data2 = merchants,
                                   col_name = "card_id", add_name = "_old")
 new_transactions <- aggregate_history(data1 = new_transactions,data2 = merchants, 
