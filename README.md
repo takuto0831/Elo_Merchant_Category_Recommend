@@ -44,9 +44,12 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 ## R script
 
-─ preprocess.R: 前処理関数
-- aggregate.R: 集約関数
+- preprocess.R: 前処理関数,追加/削除したカラムの情報は`About_data.xlsx`のprocessedの項目に記載
+
+- aggregate.R: 集約関数 (変数の型等によって処理を変える)
+
 - column_name_list.R: binary変数, numerical変数, categorical変数のリスト (集約関数での処理を変えるため)
+
 ─ convert_to_feather.R: csv dataをfeather形式に変更する処理
 
 ## tree structure
