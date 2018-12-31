@@ -50,7 +50,7 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 - column_name_list.R: binary変数, numerical変数, categorical変数のリスト (集約関数での処理を変えるため)
 
-─ convert_to_feather.R: csv dataをfeather形式に変更する処理
+- convert_to_feather.R: csv dataをfeather形式に変更する処理
 
 ## tree structure
 
