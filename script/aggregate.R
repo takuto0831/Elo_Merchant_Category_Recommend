@@ -27,7 +27,7 @@ test <- test %>%
          feature_sum = feature_1 + feature_2 + feature_3) 
 
 # history datas and merchants data
-aggregate_history <- function(data1,data2,col,add_name){
+aggregate_history <- function(data1,data2,col_name,add_name){
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
@@ -54,42 +54,39 @@ aggregate_history <- function(data1,data2,col,add_name){
   tmp <- tmp %>% head(10000)
   # aggregate (binary, category, numeric)
   tmp %>% 
-    group_by(col) %>% 
+    group_by_(col_name) %>% 
     summarise_at(vars(matches(str_flatten(col_binary,collapse = "|"))), fun_binary) %>% 
     ungroup() %>% 
     left_join(
       tmp %>% 
-        group_by(col) %>% 
+        group_by_(col_name) %>% 
         summarise_at(col_category, fun_category) %>% 
         ungroup(),
-      by = col) %>% 
+      by = col_name) %>% 
     left_join(
       tmp %>% 
-        group_by(col) %>% 
+        group_by_(col_name) %>% 
         summarise_at(col_numeric, fun_numeric) %>% 
         ungroup(),
-      by = col) %>% 
+      by = col_name) %>% 
     rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c(add_name,sep="")) %>% 
     return()
 }
+# main
+transactions <- aggregate_history(data1 = transactions,data2 = merchants,
+                                  col_name = "card_id", add_name = "_old")
+new_transactions <- aggregate_history(data1 = new_transactions,data2 = merchants, 
+                                      col_name = "card_id", add_name = "_new")
 
 ### combine data ### 
 train <- train %>% 
-  left_join(
-    aggregate_history(data1 = transactions,data2 = merchants, col = "card_id", add_name = "old"),
-    by = "card_id") %>%
-  left_join(
-    aggregate_history(data1 = new_transactions,data2 = merchants, col = "card_id", add_name = "new"),
-    by = "card_id") %>%
+  left_join(transactions, by = "card_id") %>%
+  left_join(new_transactions,by = "card_id") %>%
   mutate(transaction_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
 test <- test %>% 
-  left_join(
-    aggregate_history(data1 = transactions,data2 = merchants, col = "card_id", add_name = "old"),
-    by = "card_id") %>%
-  left_join(
-    aggregate_history(data1 = new_transactions,data2 = merchants, col = "card_id", add_name = "new"),
-    by = "card_id") %>%
+  left_join(transactions, by = "card_id") %>%
+  left_join(new_transactions,by = "card_id") %>%
   mutate(transaction_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
 ### extract features ### 
