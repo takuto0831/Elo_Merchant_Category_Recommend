@@ -84,7 +84,7 @@ merchants <- merchants %>%
   distinct(merchant_id, .keep_all = TRUE) %>% 
   # history data内で処理するid等は削除
   # target encoding 等で使用する場合は適宜検討
-  select(-c(merchant_group_id,merchant_category_id,city_id,
+  select(-c(merchant_id, merchant_group_id,merchant_category_id,city_id,
             subsector_id,category_1,category_2, state_id)) 
 
 ### save file ### 
