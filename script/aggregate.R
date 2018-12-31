@@ -6,6 +6,7 @@ library(anytime)
 library(makedummies)
 library(janitor)
 library(skimr)
+library(fastDummies)
 
 ### column name list ###
 source('~/Desktop/Elo_kaggle/script/column_name_list.R')
@@ -44,28 +45,9 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   ## join history data and merchants data
   tmp <- data1 %>% 
     left_join(data2,by="merchant_label_id") 
-  y <- tmp %>% 
-    select_(one_hot_list[6]) %>% 
-    fastDummies::dummy_cols(select_columns = one_hot_list[6]) %>% 
-    select_(-one_hot_list[6])
-    
-    makedummies(dat = .,basal_level = TRUE)
-  tmp1 <- data.frame(tmp %>% select_(-one_hot_list),y)
-  
-  tmp1 <- left_join(
-      tmp %>% 
-        select(card_id,month_lag,category_1,category_2,category_3,state_id) %>% 
-        makedummies(dat = .,basal_level = TRUE,
-                    col = c("month_lag", "category_1","category_2","category_3","state_id")),
-      by = col_name)
-  tmp <- bind_cols(
-    tmp %>% select(-c(subsector_id,most_recent_sales_range,most_recent_purchases_range,category_4)),
-    makedummies(dat = tmp,basal_level = TRUE,
-                col = c("subsector_id","most_recent_sales_range","most_recent_purchases_range","category_4")))  
-  # test code
-  tmp <- tmp %>% head(10000)
+
   # aggregate (binary, category, numeric)
-  tmp %>% 
+  tmp1 <- tmp %>% 
     group_by_(col_name) %>% 
     summarise_at(vars(matches(str_flatten(col_binary,collapse = "|"))), fun_binary) %>% 
     ungroup() %>% 
@@ -80,9 +62,20 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
         group_by_(col_name) %>% 
         summarise_at(col_numeric, fun_numeric) %>% 
         ungroup(),
-      by = col_name) %>% 
-    rename_if(!str_detect(names(.),"card_id"),. %>% tolower %>% str_c(add_name,sep="")) %>% 
-    return()
+      by = col_name) 
+    ## one hot encoding and aggregate
+    for (i in 1:length(one_hot_list)) {
+      tmp1 <- tmp %>% 
+        select_(col_name,one_hot_list[i]) %>% 
+        fastDummies::dummy_cols(select_columns = one_hot_list[i]) %>% 
+        group_by_(col_name) %>% 
+        summarise_if(!str_detect(names(.),col_name),fun_binary) %>% 
+        ungroup() %>% 
+        left_join(tmp1,.,by=col_name)
+    }
+    tmp1 %>% 
+      rename_if(!str_detect(names(.),col_name),. %>% tolower %>% str_c(add_name,sep="")) %>% 
+      return()
 }
 # main
 one_hot_list <- c("month_lag", "category_1","category_2","category_3","state_id","subsector_id",
