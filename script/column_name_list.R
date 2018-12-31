@@ -1,16 +1,7 @@
 ## col sets
 col_binary <- c("authorized_flag", 
                 "installments_minus",
-                "installments_outlier",
-                "month_lag", 
-                "category_1",
-                "category_2",
-                "category_3",
-                "state_id",
-                "subsector_id",
-                "most_recent_sales_range",
-                "most_recent_purchases_range",
-                "category_4")
+                "installments_outlier")
 col_numeric <- c("installments",
                  "reference_date_diff",
                  "purchase_amount",
