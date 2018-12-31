@@ -42,6 +42,15 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 # Directory
 
+## R script
+
+─ preprocess.R: 前処理関数
+- aggregate.R: 集約関数
+- column_name_list.R: binary変数, numerical変数, categorical変数のリスト (集約関数での処理を変えるため)
+─ convert_to_feather.R: csv dataをfeather形式に変更する処理
+
+## tree structure
+
 ```
 ├── Elo_kaggle.Rproj
 ├── README.md
@@ -61,17 +70,28 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 │   │   ├── sample_submission.csv
 │   │   ├── test.csv
 │   │   └── train.csv
+│   ├── parameters
+│   │   └── kernel_param_lgb.txt
 │   └── processed
+│       ├── historical_transactions.feather
+│       ├── merchants.feather
+│       ├── new_merchant_transactions.feather
+│       ├── test.feather
+│       └── train.feather
 ├── jn
 │   ├── Kaggle_kernel_tunguz.ipynb
+│   ├── Make_Parameters.ipynb
 │   └── main.ipynb
 ├── output
 │   ├── Bagging20181224.csv
 │   ├── Lasso20181224.csv
 │   └── Ridge20181224.csv
 ├── py
+│   ├── __init__.py
 │   ├── __pycache__
+│   │   ├── base.cpython-36.pyc
 │   │   └── models.cpython-36.pyc
+│   ├── base.py
 │   ├── main.py
 │   └── models
 │       ├── Ensemble.py
@@ -80,6 +100,7 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 │       ├── __init__.py
 │       └── __pycache__
 │           ├── Boosting.cpython-36.pyc
+│           ├── Ensemble.cpython-36.pyc
 │           ├── GradientBoosting.cpython-36.pyc
 │           ├── Regressor.cpython-36.pyc
 │           └── Ridge_Regressor.cpython-36.pyc
@@ -87,6 +108,8 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 │   ├── EDA.Rmd
 │   └── EDA.html
 └── script
+    ├── aggregate.R
+    ├── column_name_list.R
     ├── convert_to_feather.R
-    └── preprocess1.R
+    └── preprocess.R
 ```
