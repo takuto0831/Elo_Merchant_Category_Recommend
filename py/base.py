@@ -6,7 +6,7 @@ import pickle
 
 def read_data(train_name,test_name,features_name, home_path):
     #Loading Train and Test Data
-    Base = home_path + "/Desktop/Elo_kaggle/input/processed/"
+    Base = home_path + "/Desktop/Elo_kaggle/input/aggregated/"
     train = feather.read_dataframe(Base + train_name + ".feather")
     test = feather.read_dataframe(Base + test_name + ".feather")
     features = feather.read_dataframe(Base + features_name + ".feather")
@@ -27,5 +27,5 @@ def submit(predict,tech, home_path):
     submit_file.to_csv(file_name, index=False)
 def open_parameter(file_name, home_path):
     f = open(home_path + '/Desktop/Elo_kaggle/input/parameters/' + file_name + '.txt', 'rb')
-    list = pickle.load(f)
-    return list
+    list_ = pickle.load(f)
+    return list_
