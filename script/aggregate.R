@@ -7,7 +7,7 @@ library(makedummies)
 library(janitor)
 library(skimr)
 library(fastDummies)
-library(tictoc)
+library(lineNotify)
 
 ### column name list ###
 source('~/Desktop/Elo_kaggle/script/column_name_list.R')
@@ -30,7 +30,6 @@ test <- test %>%
 
 # history datas and merchants data
 aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
-  tic() # start time
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
@@ -44,6 +43,8 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   fun_numeric <- funs(mean, sum, min, max, sd, .args = list(na.rm = TRUE)) # for numeric
   fun_category <- funs(n_unique,n_missing,count_max,count_min,count_mean,count_sd,mode) # for category
 
+  # start time
+  time <- proc.time() 
   ## join history data and merchants data
   tmp <- data1 %>% 
     left_join(data2,by="merchant_label_id") 
@@ -75,7 +76,11 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
       ungroup() %>% 
       left_join(tmp1,.,by=col_name)
   }
-  toc() # end time
+  # end time
+  end_time <- proc.time() - time 
+  # line notification
+  notify <- paste("execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
+  notify_msg(notify)
   # add each name
   tmp1 %>% 
     rename_if(!str_detect(names(.),col_name),. %>% tolower %>% str_c(add_name,sep="")) %>% 
