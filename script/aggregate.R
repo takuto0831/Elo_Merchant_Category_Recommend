@@ -7,6 +7,7 @@ library(makedummies)
 library(janitor)
 library(skimr)
 library(fastDummies)
+library(tictoc)
 
 ### column name list ###
 source('~/Desktop/Elo_kaggle/script/column_name_list.R')
@@ -29,6 +30,7 @@ test <- test %>%
 
 # history datas and merchants data
 aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
+  tic() # start time
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
@@ -63,29 +65,34 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
         summarise_at(col_numeric, fun_numeric) %>% 
         ungroup(),
       by = col_name) 
-    ## one hot encoding and aggregate
-    for (i in 1:length(one_hot_list)) {
-      tmp1 <- tmp %>% 
-        select_(col_name,one_hot_list[i]) %>% 
-        fastDummies::dummy_cols(select_columns = one_hot_list[i]) %>% 
-        group_by_(col_name) %>% 
-        summarise_if(!str_detect(names(.),col_name),fun_binary) %>% 
-        ungroup() %>% 
-        left_join(tmp1,.,by=col_name)
-    }
-    tmp1 %>% 
-      rename_if(!str_detect(names(.),col_name),. %>% tolower %>% str_c(add_name,sep="")) %>% 
-      return()
+  ## one hot encoding and aggregate
+  for (i in 1:length(one_hot_list)) {
+    tmp1 <- tmp %>%
+      select_(col_name,one_hot_list[i]) %>% 
+      fastDummies::dummy_cols(select_columns = one_hot_list[i]) %>% 
+      group_by_(col_name) %>% 
+      summarise_if(!str_detect(names(.),col_name),fun_binary) %>% 
+      ungroup() %>% 
+      left_join(tmp1,.,by=col_name)
+  }
+  toc() # end time
+  # add each name
+  tmp1 %>% 
+    rename_if(!str_detect(names(.),col_name),. %>% tolower %>% str_c(add_name,sep="")) %>% 
+    return()
 }
 # main
+## one hot encoding list
 one_hot_list <- c("month_lag", "category_1","category_2","category_3","state_id","subsector_id",
                   "most_recent_sales_range","most_recent_purchases_range","category_4")
+## aggregate transactions
 transactions <- aggregate_history(data1 = transactions,data2 = merchants,
-                                  col_name = "card_id", add_name = "_old")
-new_transactions <- aggregate_history(data1 = new_transactions,data2 = merchants, 
-                                      col_name = "card_id", add_name = "_new")
+                                  col_name = "card_id", add_name = "_old",one_hot_list)
 
-### combine data ### 
+new_transactions <- aggregate_history(data1 = new_transactions,data2 = merchants, 
+                                      col_name = "card_id", add_name = "_new",one_hot_list)
+
+## combine data and extratc features
 train <- train %>% 
   left_join(transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%
@@ -96,7 +103,6 @@ test <- test %>%
   left_join(new_transactions,by = "card_id") %>%
   mutate(transaction_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
-### extract features ### 
 features <- train %>% 
   # 特徴量として扱わないカラム
   select(-c(card_id, merchant_id, purchase_date,first_active_month,target,target_class)) %>% 
