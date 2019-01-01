@@ -5,6 +5,6 @@ input/processed
 .Rhistory
 py/__pycache__
 py/models/__pycache__
-output
+output/submit
 jn/.ipynb_checkpoints
 input/aggregated
