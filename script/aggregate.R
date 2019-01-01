@@ -44,7 +44,7 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   fun_category <- funs(n_unique,n_missing,count_max,count_min,count_mean,count_sd,mode) # for category
 
   # start time
-  time <- proc.time() 
+  start_time <- proc.time() 
   ## join history data and merchants data
   tmp <- data1 %>% 
     left_join(data2,by="merchant_label_id") 
@@ -77,7 +77,7 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
       left_join(tmp1,.,by=col_name)
   }
   # end time
-  end_time <- proc.time() - time 
+  end_time <- proc.time() - start_time 
   # line notification
   notify <- paste("execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
   notify_msg(notify)
