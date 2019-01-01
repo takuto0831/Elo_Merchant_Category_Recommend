@@ -64,6 +64,12 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 - convert_to_feather.R: csv dataをfeather形式に変更する処理
 
+## python script
+
+- base.py: read file, make submit file, visulization function等
+
+- models: 線形回帰, 勾配ブースティング, NN?
+
 ## tree structure
 
 ```
