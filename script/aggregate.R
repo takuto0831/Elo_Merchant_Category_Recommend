@@ -125,6 +125,6 @@ features <- train %>%
 
 ### save combine data and features ###
 # train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
-write_feather(train,"~/Desktop/Elo_kaggle/input/processed/train_20190101.feather")
-write_feather(test,"~/Desktop/Elo_kaggle/input/processed/test_20190101.feather")
-write_feather(features, "~/Desktop/Elo_kaggle/input/processed/features_20190101.feather")
+write_feather(train,"~/Desktop/Elo_kaggle/input/aggregated/train_20190101.feather")
+write_feather(test,"~/Desktop/Elo_kaggle/input/aggregated/test_20190101.feather")
+write_feather(features, "~/Desktop/Elo_kaggle/input/aggregated/features_20190101.feather")
