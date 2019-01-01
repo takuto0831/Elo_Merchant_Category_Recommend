@@ -10,7 +10,8 @@ library(fastDummies)
 library(lineNotify)
 
 ### column name list ###
-source('~/Desktop/Elo_kaggle/script/column_name_list.R')
+# source('~/Desktop/Elo_kaggle/script/column_name_list.R')
+source('~/Desktop/Elo_kaggle/script/line_connection.R')
 
 # input data
 # rm(list = ls())
@@ -79,7 +80,7 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   # end time
   end_time <- proc.time() - start_time 
   # line notification
-  notify <- paste("execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
+  notify <- paste("\n execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
   notify_msg(notify)
   # add each name
   tmp1 %>% 
