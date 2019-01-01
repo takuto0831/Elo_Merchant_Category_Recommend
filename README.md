@@ -42,6 +42,18 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 # Directory
 
+## input
+
+- aggregated: 集約後の予測モデル構築用データ
+
+- processed: 前処理済みデータ
+
+- feather: feather形式に変更したデータ
+
+- original: 元データ
+
+- parameters: 各種 Gradient Boosting Method用のparameter list
+
 ## R script
 
 - preprocess.R: 前処理関数,追加/削除したカラムの情報は`About_data.xlsx`のprocessedの項目に記載
@@ -59,6 +71,10 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 ├── README.md
 ├── input
 │   ├── About_data.xlsx
+│   ├── aggregated
+│   │   ├── features_20190101.feather
+│   │   ├── test_20190101.feather
+│   │   └── train_20190101.feather
 │   ├── feather
 │   │   ├── historical_transactions.feather
 │   │   ├── merchants.feather
