@@ -66,25 +66,33 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
         group_by_(col_name) %>% 
         summarise_at(col_numeric, fun_numeric) %>% 
         ungroup(),
-      by = col_name) 
+      by = col_name) %>% 
+    mutate_if(is.numeric, round,4)
+  # middle time
+  half_time <- proc.time() - start_time 
+  # line notification
+  notify <- paste("\n middle point execution time:",half_time[3] %>% as.numeric %>% round(4),"second")
+  notify_msg(notify)
   ## one hot encoding and aggregate
   for (i in 1:length(one_hot_list)) {
     tmp1 <- tmp %>%
       select_(col_name,one_hot_list[i]) %>% 
       fastDummies::dummy_cols(select_columns = one_hot_list[i]) %>% 
+      select(-c(2)) %>% # remove
       group_by_(col_name) %>% 
-      summarise_if(!str_detect(names(.),col_name),fun_binary) %>% 
+      summarise_if(is.integer,fun_binary) %>% # exclusive card_id
       ungroup() %>% 
       left_join(tmp1,.,by=col_name)
   }
   # end time
   end_time <- proc.time() - start_time 
   # line notification
-  notify <- paste("\n execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
+  notify <- paste("\n finished execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
   notify_msg(notify)
   # add each name
   tmp1 %>% 
-    rename_if(!str_detect(names(.),col_name),. %>% tolower %>% str_c(add_name,sep="")) %>% 
+    mutate_if(is.numeric, round,4) %>% 
+    rename_if(is.factor %>% negate,. %>% tolower %>% str_c(add_name,sep="")) %>% 
     return()
 }
 # main
