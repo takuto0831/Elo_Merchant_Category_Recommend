@@ -119,7 +119,7 @@ test <- test %>%
 
 features <- train %>% 
   # 特徴量として扱わないカラム
-  select(-c(card_id, merchant_id, purchase_date,first_active_month,target,target_class)) %>% 
+  select(-c(card_id,first_active_month,target,target_class)) %>% 
   colnames() %>% 
   data.frame(feature = .)
 
