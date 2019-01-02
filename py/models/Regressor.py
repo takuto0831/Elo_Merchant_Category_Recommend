@@ -20,7 +20,7 @@ def Regressors(clf,train,test,features,target,folds=5):
     test_pred = np.zeros(test.shape[0])
     ## make test data
     test_data = test.copy()
-    test_data.fillna((test_data.mean()), inplace=True)
+    test_data.replace([np.inf, -np.inf], np.nan).fillna((test_data.mean()), inplace=True)
     test_data = test_data[features].values
     ## k-stratified k-Fold
     folds = Validation(folds)
@@ -30,8 +30,8 @@ def Regressors(clf,train,test,features,target,folds=5):
         trn_data, trn_y = train.iloc[trn_idx][features], target.iloc[trn_idx].values
         val_data, val_y = train.iloc[val_idx][features], target.iloc[val_idx].values
         # fill missing values
-        trn_data.fillna((trn_data.mean()), inplace=True);
-        val_data.fillna((val_data.mean()), inplace=True);
+        trn_data.replace([np.inf, -np.inf], np.nan).fillna((trn_data.mean()), inplace=True);
+        val_data.replace([np.inf, -np.inf], np.nan).fillna((val_data.mean()), inplace=True);
         # extract data
         trn_data = trn_data.values; val_data = val_data.values;
         # fitting arvitrary model for train data
