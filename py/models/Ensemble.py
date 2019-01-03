@@ -1,13 +1,11 @@
 import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import pandas as pd # data processing
 from sklearn.linear_model import Ridge, Lasso
 from sklearn.ensemble import BaggingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
-
-def Validation(k):
-    return StratifiedKFold(n_splits=k, shuffle=True, random_state=831)
+from associate import Validation
 
 def Ensembles(clf,train_stack,test_stack,train,target,folds=5):
     ## predict data box
