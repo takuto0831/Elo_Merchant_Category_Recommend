@@ -5,7 +5,18 @@ from datetime import datetime
 import pickle,requests
 import matplotlib.pyplot as plt
 import seaborn as sns
+import time
+from contextlib import contextmanager
 
+def line(text):
+    line_notify_token = '07tI1nvYaAtGaLdsCaxKZxkboOU0OsvLregXqodN2ZV' #先程発行したコードを貼ります
+    line_notify_api = 'https://notify-api.line.me/api/notify'
+    message = '\n' + text
+    #変数messageに文字列をいれて送信します トークン名の隣に文字が来てしまうので最初に改行しました
+    payload = {'message': message}
+    headers = {'Authorization': 'Bearer ' + line_notify_token}
+    line_notify = requests.post(line_notify_api, data=payload, headers=headers)
+    
 def read_data(train_name,test_name,features_name, home_path):
     #Loading Train and Test Data
     Base = home_path + "/Desktop/Elo_kaggle/input/aggregated/"
@@ -31,21 +42,31 @@ def open_parameter(file_name, home_path):
     f = open(home_path + '/Desktop/Elo_kaggle/input/parameters/' + file_name + '.txt', 'rb')
     list_ = pickle.load(f)
     return list_
-def line(text):
-    line_notify_token = '07tI1nvYaAtGaLdsCaxKZxkboOU0OsvLregXqodN2ZV' #先程発行したコードを貼ります
-    line_notify_api = 'https://notify-api.line.me/api/notify'
-    message = '\n' + text
-    #変数messageに文字列をいれて送信します トークン名の隣に文字が来てしまうので最初に改行しました
-    payload = {'message': message}
-    headers = {'Authorization': 'Bearer ' + line_notify_token}
-    line_notify = requests.post(line_notify_api, data=payload, headers=headers)
-def display_importances(features,model,title,home_path,file_name = None):
-    # make data frame
-    importance_df = pd.DataFrame({'feature':features, 'importance':model.feature_importance()})
-    plt.figure(figsize=(14,25))
-    sns.barplot(x="importance",y="feature",
-                data=importance_df.sort_values(by="importance", ascending=False))
-    plt.title(title)
+def display_importances(importance_df,title,home_path,file_name = None):
+    cols = (importance_df[["feature", "importance"]]
+            .groupby("feature")
+            .mean()
+            .sort_values(by="importance", ascending=False)[:500].index)
+    best_features = importance_df.loc[importance_df.feature.isin(cols)]
+    plt.figure(figsize=(14,60))
+    sns.barplot(x="importance",
+                y="feature",
+                data=best_features.sort_values(by="importance",ascending=False))
+    plt.title(title + 'Features (avg over folds)')
     plt.tight_layout()
+    # save ?
     if file_name is not None: 
         plt.savefig(home_path + '/Desktop/Elo_kaggle/output/image/' + file_name)
+def extract_best_features(importance_df,num):
+    cols = (importance_df[["feature", "importance"]]
+            .groupby("feature")
+            .mean()
+            .sort_values(by="importance", ascending=False)[:num].index)
+    return cols.values.tolist()
+
+@contextmanager
+def timer(title):
+    start = time.time()
+    yield
+    end = time.time()
+    line("{} - done in {:.0f}s".format(title, end-start))
