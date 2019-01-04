@@ -27,10 +27,17 @@ preprocess_train <- function(data){
 train <- train %>%
   preprocess_train %>% 
   mutate(target_class = 
-           case_when(target < -30 ~ 1,target >= 0 ~ 3,TRUE ~ 2)) # クロスバリデーションで使用
+           case_when(target < -30 ~ 1,TRUE ~ 2)) # クロスバリデーションで使用
 
 test <- test %>% 
   preprocess_train 
+
+#!!!!!!!!!!!!! authorized mean !!!!!!!!!!!!!#
+authorized_mean <- transactions %>% 
+  mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
+  group_by(card_id) %>% 
+  summarise(authorized_mean = mean(authorized_flag)) %>% 
+  ungroup()
 
 #!!!!!!!!!!!!! transaction_history and new_transaction_history !!!!!!!!!!!!!#
 # historyデータには支払い固有の情報と店舗に依存する情報がある!!
@@ -42,17 +49,19 @@ preprocess_history <- function(data){
     distinct(card_id,.keep_all = TRUE) %>% 
     ungroup() %>% 
     mutate(reference_date = purchase_date %m+% months(abs(month_lag)) ) %>% 
-    mutate(reference_date_diff = difftime(as.POSIXct("2018-02-28 23:59:59",tz="UTC"), reference_date,
+    mutate(reference_date_diff = difftime(as.POSIXct("2018-02-28 23:59:59",tz="Brazil"), reference_date,
                                           units = "days") %>% as.integer()) %>% 
     select(card_id,reference_date_diff)
   # main
   tmp <- data %>% 
-    # authorized_flagを0or1に, category_2, month_lag, state_id, subsector_idをfactor型に
-    mutate(authorized_flag = if_else(authorized_flag == "Y",0,1),
-           category_2 = category_2 %>% as.factor,
+    # time zoneをブラジルに設定する
+    mutate(purchase_date = as.POSIXlt(as.POSIXct(purchase_date, tz="UTC"),tz="Brazil")) %>% 
+    # category_2, month_lag, state_id, subsector_idをfactor型に, installmentsをint型に
+    mutate(category_2 = category_2 %>% as.factor,
            month_lag = month_lag %>% as.factor,
            state_id = state_id %>% as.factor,
-           subsector_id = subsector_id %>% as.factor) %>% 
+           subsector_id = subsector_id %>% as.factor,
+           installments = installments %>% as.integer) %>% 
     # 支払い分割数 (-1, 999の処理)
     mutate(installments_minus = if_else(installments == -1,1,0),
            installments_outlier = if_else(installments == 999,1,0),
@@ -75,8 +84,17 @@ preprocess_history <- function(data){
   return(tmp)
 }
 # main
-transactions <- preprocess_history(transactions)
-new_transactions <- preprocess_history(new_transactions)
+authorized_transactions <- transactions %>% 
+  mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
+  filter(authorized_flag == 1) %>% 
+  preprocess_history(transactions)
+history_transactions <- transactions %>% 
+  mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
+  filter(authorized_flag == 0) %>% 
+  preprocess_history(transactions)
+new_transactions <- new_transactions %>% 
+  mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
+  preprocess_history(new_transactions)
 
 #!!!!!!!!!!!!! merchants data !!!!!!!!!!!!!#
 merchants <- merchants %>% 
@@ -90,6 +108,7 @@ merchants <- merchants %>%
 ### save file ### 
 write_feather(train, "~/Desktop/Elo_kaggle/input/processed/train.feather")
 write_feather(test, "~/Desktop/Elo_kaggle/input/processed/test.feather")
+write_feather(authorized_mean, "~/Desktop/Elo_kaggle/input/processed/authorized_mean.feather")
 write_feather(transactions, "~/Desktop/Elo_kaggle/input/processed/historical_transactions.feather")
 write_feather(new_transactions, "~/Desktop/Elo_kaggle/input/processed/new_merchant_transactions.feather")
 write_feather(merchants, "~/Desktop/Elo_kaggle/input/processed/merchants.feather")

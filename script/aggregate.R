@@ -66,12 +66,12 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
         group_by_(col_name) %>% 
         summarise_at(col_numeric, fun_numeric) %>% 
         ungroup(),
-      by = col_name) %>% 
-    mutate_if(is.numeric, round,4)
+      by = col_name) # %>% 
+    # mutate_if(is.numeric, round,4)
   # middle time
   half_time <- proc.time() - start_time 
   # line notification
-  notify <- paste("\n middle point execution time:",half_time[3] %>% as.numeric %>% round(4),"second")
+  notify <- paste("\n aggregate function finished execution time:",half_time[3] %>% as.numeric %>% round(5),"second")
   notify_msg(notify)
   ## one hot encoding and aggregate
   for (i in 1:length(one_hot_list)) {
@@ -87,11 +87,11 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   # end time
   end_time <- proc.time() - start_time 
   # line notification
-  notify <- paste("\n finished execution time:",end_time[3] %>% as.numeric %>% round(4),"second")
+  notify <- paste("\n one hot encoding finished execution time:",end_time[3] %>% as.numeric %>% round(5),"second")
   notify_msg(notify)
   # add each name
   tmp1 %>% 
-    mutate_if(is.numeric, round,4) %>% 
+    # mutate_if(is.numeric, round,4) %>% 
     rename_if(is.factor %>% negate,. %>% tolower %>% str_c(add_name,sep="")) %>% 
     return()
 }
@@ -124,7 +124,7 @@ features <- train %>%
   data.frame(feature = .)
 
 ### save combine data and features ###
-# train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train_20181223.feather")
+# train <- read_feather("~/Desktop/Elo_kaggle/input/aggregated/train_1037.feather")
 write_feather(train,"~/Desktop/Elo_kaggle/input/aggregated/train_20190101.feather")
 write_feather(test,"~/Desktop/Elo_kaggle/input/aggregated/test_20190101.feather")
 write_feather(features, "~/Desktop/Elo_kaggle/input/aggregated/features_20190101.feather")
