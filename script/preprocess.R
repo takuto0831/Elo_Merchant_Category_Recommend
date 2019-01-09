@@ -11,6 +11,7 @@ test <- read_feather("~/Desktop/Elo_kaggle/input/feather/test.feather")
 transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/historical_transactions.feather")
 new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/feather/new_merchant_transactions.feather")
 merchants <- read_feather("~/Desktop/Elo_kaggle/input/feather/merchants.feather")
+holidays <- read_csv("~/Desktop/Elo_kaggle/input/original/holiday_list.csv")
 
 ####################### Feature engineering #########################
 #!!!!!!!!!!!!! train data and test data !!!!!!!!!!!!!#
@@ -54,8 +55,25 @@ preprocess_history <- function(data){
     select(card_id,reference_date_diff)
   # main
   tmp <- data %>% 
-    # time zoneをブラジルに設定する
-    mutate(purchase_date = as.POSIXlt(as.POSIXct(purchase_date, tz="UTC"),tz="Brazil")) %>% 
+    # 購入月, 曜日を追加
+    mutate(purchase_month = month(purchase_date),
+           purchase_wday = wday(purchase_date)) %>% 
+    # 祝日, 祝前日情報を付与(一時的に Date列を用意)
+    mutate(Date = as.Date(strftime(purchase_date, "%Y-%m-%d"))) %>% 
+    left_join(.,holidays,by = "Date") %>% 
+    # 祝日であるか? 祝前日であるか?土日であるかどうか?のカラムを用意
+    mutate(normal_holiday = 
+             case_when(purchase_wday == 1 ~ 1,
+                       purchase_wday == 7 ~ 1,
+                       TRUE ~ 0),
+           public_holiday =
+             case_when(Holiday_info == 2 ~ 1,
+                       TRUE ~ 0),
+           public_pre_holiday = 
+             case_when(Holiday_info == 1 ~ 1,
+                       TRUE ~ 0)) %>% 
+    # 不要列削除
+    select(-Date,-Holiday_info) %>% 
     # category_2, month_lag, state_id, subsector_idをfactor型に, installmentsをint型に
     mutate(category_2 = category_2 %>% as.factor,
            month_lag = month_lag %>% as.factor,
