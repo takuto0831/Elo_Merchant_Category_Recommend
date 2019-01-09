@@ -17,6 +17,8 @@ source('~/Desktop/Elo_kaggle/script/line_connection.R')
 # rm(list = ls())
 train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train.feather")
 test <- read_feather("~/Desktop/Elo_kaggle/input/processed/test.feather")
+authorized_mean <- read_feather("~/Desktop/Elo_kaggle/input/processed/authorized_mean.feather")
+
 transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/historical_transactions.feather")
 new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/new_merchant_transactions.feather")
 merchants <- read_feather("~/Desktop/Elo_kaggle/input/processed/merchants.feather")
@@ -30,7 +32,7 @@ test <- test %>%
          feature_sum = feature_1 + feature_2 + feature_3) 
 
 # history datas and merchants data
-aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
+aggregate_history <- function(data1,col_name,add_name){
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
@@ -39,6 +41,7 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   count_mean <- function(col) col %>% tabyl %>% .$n %>% mean %>% return()
   count_sd <- function(col) col %>% tabyl %>% .$n %>% sd %>% return()
   mode <- function(col) col %>% tabyl %>% .$n %>% which.max %>% return()
+  Range <- function(col,na.rm)  max(col,na.rm) - min(col,na.rm) %>% return()
   ## funs lists
   fun_binary <- funs(mean(.,na.rm = TRUE), sum(.,na.rm = TRUE), sd(.,na.rm = TRUE), n_missing) # for binary
   fun_numeric <- funs(mean, sum, min, max, sd, .args = list(na.rm = TRUE)) # for numeric
@@ -48,7 +51,7 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
   start_time <- proc.time() 
   ## join history data and merchants data
   tmp <- data1 %>% 
-    left_join(data2,by="merchant_label_id") 
+    left_join(merchants,by="merchant_label_id") 
 
   # aggregate (binary, category, numeric)
   tmp1 <- tmp %>% 
@@ -96,15 +99,10 @@ aggregate_history <- function(data1,data2,col_name,add_name,one_hot_list){
     return()
 }
 # main
-## one hot encoding list
-one_hot_list <- c("month_lag", "category_1","category_2","category_3","state_id","subsector_id",
-                  "most_recent_sales_range","most_recent_purchases_range","category_4")
-## aggregate transactions
-transactions <- aggregate_history(data1 = transactions,data2 = merchants,
-                                  col_name = "card_id", add_name = "_old",one_hot_list)
 
-new_transactions <- aggregate_history(data1 = new_transactions,data2 = merchants, 
-                                      col_name = "card_id", add_name = "_new",one_hot_list)
+## aggregate transactions
+transactions <- aggregate_history(data1 = transactions,col_name = "card_id", add_name = "_old")
+new_transactions <- aggregate_history(data1 = new_transactions,col_name = "card_id", add_name = "_new")
 
 ## combine data and extratc features
 train <- train %>% 
