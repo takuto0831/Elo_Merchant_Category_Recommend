@@ -105,14 +105,14 @@ preprocess_history <- function(data){
 authorized_transactions <- transactions %>% 
   mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
   filter(authorized_flag == 1) %>% 
-  preprocess_history(transactions)
+  preprocess_history
 history_transactions <- transactions %>% 
   mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
   filter(authorized_flag == 0) %>% 
-  preprocess_history(transactions)
+  preprocess_history
 new_transactions <- new_transactions %>% 
   mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
-  preprocess_history(new_transactions)
+  preprocess_history
 
 #!!!!!!!!!!!!! merchants data !!!!!!!!!!!!!#
 merchants <- merchants %>% 
