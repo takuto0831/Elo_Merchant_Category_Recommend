@@ -97,6 +97,8 @@ preprocess_history <- function(data){
              difftime(purchase_date, lag(purchase_date, default=0 , order_by=purchase_date),
                       units = "days") %>% as.integer()) %>% 
     ungroup() %>% 
+    # authorized_flagの削除
+    select(-authorized_flag) %>% 
     # tmp1を結合
     left_join(tmp1,by="card_id")
   return(tmp)
@@ -127,6 +129,7 @@ merchants <- merchants %>%
 write_feather(train, "~/Desktop/Elo_kaggle/input/processed/train.feather")
 write_feather(test, "~/Desktop/Elo_kaggle/input/processed/test.feather")
 write_feather(authorized_mean, "~/Desktop/Elo_kaggle/input/processed/authorized_mean.feather")
-write_feather(transactions, "~/Desktop/Elo_kaggle/input/processed/historical_transactions.feather")
-write_feather(new_transactions, "~/Desktop/Elo_kaggle/input/processed/new_merchant_transactions.feather")
+write_feather(authorized_transactions, "~/Desktop/Elo_kaggle/input/processed/authorized_transactions.feather")
+write_feather(history_transactions, "~/Desktop/Elo_kaggle/input/processed/history_transactions.feather")
+write_feather(new_transactions, "~/Desktop/Elo_kaggle/input/processed/new_transactions.feather")
 write_feather(merchants, "~/Desktop/Elo_kaggle/input/processed/merchants.feather")

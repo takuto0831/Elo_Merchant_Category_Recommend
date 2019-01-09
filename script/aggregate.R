@@ -18,9 +18,9 @@ source('~/Desktop/Elo_kaggle/script/line_connection.R')
 train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train.feather")
 test <- read_feather("~/Desktop/Elo_kaggle/input/processed/test.feather")
 authorized_mean <- read_feather("~/Desktop/Elo_kaggle/input/processed/authorized_mean.feather")
-
-transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/historical_transactions.feather")
-new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/new_merchant_transactions.feather")
+authorized_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/authorized_transactions.feather")
+history_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/history_transactions.feather")
+new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/new_transactions.feather")
 merchants <- read_feather("~/Desktop/Elo_kaggle/input/processed/merchants.feather")
 
 # train data and test data
@@ -32,7 +32,7 @@ test <- test %>%
          feature_sum = feature_1 + feature_2 + feature_3) 
 
 # history datas and merchants data
-aggregate_history <- function(data1,col_name,add_name){
+aggregate_history <- function(data,col_name,add_name){
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
@@ -44,13 +44,13 @@ aggregate_history <- function(data1,col_name,add_name){
   Range <- function(col,na.rm)  max(col,na.rm) - min(col,na.rm) %>% return()
   ## funs lists
   fun_binary <- funs(mean(.,na.rm = TRUE), sum(.,na.rm = TRUE), sd(.,na.rm = TRUE), n_missing) # for binary
-  fun_numeric <- funs(mean, sum, min, max, sd, .args = list(na.rm = TRUE)) # for numeric
+  fun_numeric <- funs(mean, sum, min, max, sd, Range,.args = list(na.rm = TRUE)) # for numeric
   fun_category <- funs(n_unique,n_missing,count_max,count_min,count_mean,count_sd,mode) # for category
 
   # start time
   start_time <- proc.time() 
   ## join history data and merchants data
-  tmp <- data1 %>% 
+  tmp <- data %>% 
     left_join(merchants,by="merchant_label_id") 
 
   # aggregate (binary, category, numeric)
@@ -101,19 +101,24 @@ aggregate_history <- function(data1,col_name,add_name){
 # main
 
 ## aggregate transactions
-transactions <- aggregate_history(data1 = transactions,col_name = "card_id", add_name = "_old")
-new_transactions <- aggregate_history(data1 = new_transactions,col_name = "card_id", add_name = "_new")
+authorized_transactions <- aggregate_history(data = authorized_transactions,col_name = "card_id", add_name = "_auth")
+history_transactions <- aggregate_history(data = history_transactions,col_name = "card_id", add_name = "_hist")
+new_transactions <- aggregate_history(data = new_transactions,col_name = "card_id", add_name = "_new")
 
 ## combine data and extratc features
 train <- train %>% 
-  left_join(transactions, by = "card_id") %>%
+  left_join(authorized_mean, by = "card_id") %>%
+  left_join(authorized_transactions, by = "card_id") %>%
+  left_join(history_transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%
-  mutate(transaction_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
+  mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
 test <- test %>% 
-  left_join(transactions, by = "card_id") %>%
+  left_join(authorized_mean, by = "card_id") %>%
+  left_join(authorized_transactions, by = "card_id") %>%
+  left_join(history_transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%
-  mutate(transaction_flag_new = if_else(authorized_flag_mean_new %>% is.na, 1,0)) # new_transactionの有無
+  mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
 features <- train %>% 
   # 特徴量として扱わないカラム
