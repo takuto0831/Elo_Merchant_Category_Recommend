@@ -1,5 +1,6 @@
 library(feather)
 library(tidyverse)
+library(lubridate)
 # read csv
 ## 訓練データ, テストデータ
 train <- read_csv("~/Desktop/Elo_kaggle/input/original/train.csv",
