@@ -11,10 +11,13 @@ test <- read_csv("~/Desktop/Elo_kaggle/input/original/test.csv",
 ## 取引情報データ
 transactions <- read_csv("~/Desktop/Elo_kaggle/input/original/historical_transactions.csv",
                          na = c("XNA","NA","","NaN","?")) %>% 
-  mutate_if(is.character, funs(factor(.))) 
+  mutate_if(is.character, funs(factor(.))) %>% 
+  mutate(purchase_date = force_tz(purchase_date, tz = "GMT"))
+
 new_transactions <- read_csv("~/Desktop/Elo_kaggle/input/original/new_merchant_transactions.csv",
                              na = c("XNA","NA","","NaN","?")) %>% 
-  mutate_if(is.character, funs(factor(.))) 
+  mutate_if(is.character, funs(factor(.))) %>% 
+  mutate(purchase_date = force_tz(purchase_date, tz = "GMT"))
 ## 加盟店情報
 merchants <- read_csv("~/Desktop/Elo_kaggle/input/original/merchants.csv",
                       na = c("XNA","NA","","NaN","?")) %>% 
