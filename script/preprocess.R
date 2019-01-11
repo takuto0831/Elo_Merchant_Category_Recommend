@@ -33,12 +33,23 @@ train <- train %>%
 test <- test %>% 
   preprocess_train 
 
-#!!!!!!!!!!!!! authorized mean !!!!!!!!!!!!!#
-authorized_mean <- transactions %>% 
+#!!!!!!!!!!!!! aggregated transactions !!!!!!!!!!!!!#
+aggregated_history <- transactions %>% 
   mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
   group_by(card_id) %>% 
-  summarise(authorized_mean = mean(authorized_flag)) %>% 
-  ungroup()
+  summarise(authorized_mean = mean(authorized_flag),
+            authorized_sum = sum(authorized_flag),
+            transaction_count = n()) %>% 
+  ungroup() %>% 
+  rename_at(vars(-card_id),. %>% tolower %>% str_c("_hist",sep=""))
+  
+aggregated_new <- new_transactions %>% 
+  mutate(authorized_flag = if_else(authorized_flag == "Y",0,1)) %>% 
+  group_by(card_id) %>% 
+  summarise(authorized_sum = sum(authorized_flag),
+            transaction_count = n()) %>% 
+  ungroup() %>% 
+  rename_at(vars(-card_id),. %>% tolower %>% str_c("_new",sep="")) 
 
 #!!!!!!!!!!!!! transaction_history and new_transaction_history !!!!!!!!!!!!!#
 # historyデータには支払い固有の情報と店舗に依存する情報がある!!
@@ -55,9 +66,10 @@ preprocess_history <- function(data){
     select(card_id,reference_date_diff)
   # main
   tmp <- data %>% 
-    # 購入月, 曜日を追加
+    # 購入月, 曜日, 時間を追加
     mutate(purchase_month = month(purchase_date),
-           purchase_wday = wday(purchase_date)) %>% 
+           purchase_wday = wday(purchase_date),
+           purchase_hour = hour(purchase_date)) %>% 
     # 祝日, 祝前日情報を付与(一時的に Date列を用意)
     mutate(Date = as.Date(strftime(purchase_date, "%Y-%m-%d"))) %>% 
     left_join(.,holidays,by = "Date") %>% 
@@ -128,7 +140,8 @@ merchants <- merchants %>%
 ### save file ### 
 write_feather(train, "~/Desktop/Elo_kaggle/input/processed/train.feather")
 write_feather(test, "~/Desktop/Elo_kaggle/input/processed/test.feather")
-write_feather(authorized_mean, "~/Desktop/Elo_kaggle/input/processed/authorized_mean.feather")
+write_feather(aggregated_history, "~/Desktop/Elo_kaggle/input/processed/aggregated_history.feather")
+write_feather(aggregated_new, "~/Desktop/Elo_kaggle/input/processed/aggregated_new.feather")
 write_feather(authorized_transactions, "~/Desktop/Elo_kaggle/input/processed/authorized_transactions.feather")
 write_feather(history_transactions, "~/Desktop/Elo_kaggle/input/processed/history_transactions.feather")
 write_feather(new_transactions, "~/Desktop/Elo_kaggle/input/processed/new_transactions.feather")

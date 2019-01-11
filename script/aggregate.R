@@ -17,7 +17,8 @@ source('~/Desktop/Elo_kaggle/script/line_connection.R')
 # rm(list = ls())
 train <- read_feather("~/Desktop/Elo_kaggle/input/processed/train.feather")
 test <- read_feather("~/Desktop/Elo_kaggle/input/processed/test.feather")
-authorized_mean <- read_feather("~/Desktop/Elo_kaggle/input/processed/authorized_mean.feather")
+aggregated_history <- read_feather("~/Desktop/Elo_kaggle/input/processed/aggregated_history.feather")
+aggregated_new <- read_feather("~/Desktop/Elo_kaggle/input/processed/aggregated_new.feather")
 authorized_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/authorized_transactions.feather")
 history_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/history_transactions.feather")
 new_transactions <- read_feather("~/Desktop/Elo_kaggle/input/processed/new_transactions.feather")
@@ -36,17 +37,17 @@ aggregate_history <- function(data,col_name,add_name){
   ### column name list ###
   source('~/Desktop/Elo_kaggle/script/column_name_list.R')
   ## aggregate functions
-  count_max <- function(col) col %>% tabyl %>% .$n %>% max %>% return()
-  count_min <- function(col) col %>% tabyl %>% .$n %>% min %>% return()
-  count_mean <- function(col) col %>% tabyl %>% .$n %>% mean %>% return()
-  count_sd <- function(col) col %>% tabyl %>% .$n %>% sd %>% return()
-  mode <- function(col) col %>% tabyl %>% .$n %>% which.max %>% return()
-  Range <- function(col,na.rm)  max(col,na.rm) - min(col,na.rm) %>% return()
+  # count_max <- function(col) col %>% tabyl %>% .$n %>% max %>% return()
+  # count_min <- function(col) col %>% tabyl %>% .$n %>% min %>% return()
+  # count_mean <- function(col) col %>% tabyl %>% .$n %>% mean %>% return()
+  # count_sd <- function(col) col %>% tabyl %>% .$n %>% sd %>% return()
+  # mode <- function(col) col %>% tabyl %>% .$n %>% which.max %>% return()
+  Range <- function(col,na.rm) diff(range(col,na.rm)) %>% return()
   ## funs lists
-  fun_binary <- funs(mean(.,na.rm = TRUE), sum(.,na.rm = TRUE), sd(.,na.rm = TRUE), n_missing) # for binary
+  fun_binary <- funs(mean, sum, sd, .args = list(na.rm = TRUE)) # for binary
   fun_numeric <- funs(mean, sum, min, max, sd, Range,.args = list(na.rm = TRUE)) # for numeric
-  fun_category <- funs(n_unique,n_missing,count_max,count_min,count_mean,count_sd,mode) # for category
-
+  # fun_category <- funs(n_unique,n_missing,count_max,count_min,count_mean,count_sd,mode) # for category
+  fun_category <- funs(n_unique, n_missing)
   # start time
   start_time <- proc.time() 
   ## join history data and merchants data
@@ -107,14 +108,16 @@ new_transactions <- aggregate_history(data = new_transactions,col_name = "card_i
 
 ## combine data and extratc features
 train <- train %>% 
-  left_join(authorized_mean, by = "card_id") %>%
+  left_join(aggregated_history, by = "card_id") %>%
+  left_join(aggregated_new, by = "card_id") %>%
   left_join(authorized_transactions, by = "card_id") %>%
   left_join(history_transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%
   mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 1,0)) # new_transactionの有無
 
 test <- test %>% 
-  left_join(authorized_mean, by = "card_id") %>%
+  left_join(aggregated_history, by = "card_id") %>%
+  left_join(aggregated_new, by = "card_id") %>%
   left_join(authorized_transactions, by = "card_id") %>%
   left_join(history_transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%

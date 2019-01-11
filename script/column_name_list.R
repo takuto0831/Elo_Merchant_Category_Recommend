@@ -38,4 +38,5 @@ one_hot_list <- c("month_lag",
                   "most_recent_purchases_range",
                   "category_4",
                   "purchase_month",
-                  "purchase_wday")
+                  "purchase_wday",
+                  "purchase_hour")
