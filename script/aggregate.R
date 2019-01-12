@@ -113,7 +113,7 @@ train <- train %>%
   left_join(authorized_transactions, by = "card_id") %>%
   left_join(history_transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%
-  mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 1,0)) # new_transactionの有無
+  mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 0,1)) # new_transactionの有無
 
 test <- test %>% 
   left_join(aggregated_history, by = "card_id") %>%
@@ -121,7 +121,7 @@ test <- test %>%
   left_join(authorized_transactions, by = "card_id") %>%
   left_join(history_transactions, by = "card_id") %>%
   left_join(new_transactions,by = "card_id") %>%
-  mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 1,0)) # new_transactionの有無
+  mutate(transaction_flag_new = if_else(installments_mean_new %>% is.na, 0,1)) # new_transactionの有無
 
 features <- train %>% 
   # 特徴量として扱わないカラム
