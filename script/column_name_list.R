@@ -1,5 +1,5 @@
 ## binary column
-col_binary <- c("authorized_flag", 
+col_binary <- c(# "authorized_flag", 
                 "installments_minus",
                 "installments_outlier",
                 "normal_holiday",
