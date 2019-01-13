@@ -28,7 +28,7 @@ preprocess_train <- function(data){
 train <- train %>%
   preprocess_train %>% 
   mutate(target_class = 
-           case_when(target < -30 ~ 1,TRUE ~ 2)) # クロスバリデーションで使用
+           case_when(target < -30 ~ 1,TRUE ~ 0)) # クロスバリデーションで使用
 
 test <- test %>% 
   preprocess_train 

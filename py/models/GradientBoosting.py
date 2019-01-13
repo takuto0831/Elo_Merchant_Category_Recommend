@@ -2,7 +2,7 @@ import numpy as np # linear algebra
 import pandas as pd # data processing
 import lightgbm as lgb
 import xgboost as xgb
-from sklearn.model_selection import StratifiedKFold
+# from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
 from associate import Validation
   
@@ -10,7 +10,7 @@ from associate import Validation
 # LightGBM
 # Xgboost
 
-def Regressors(algorithm,param_set,train,test,features,target,folds=5):
+def GradientBoosting(algorithm,param_set,train,test,features,target,folds):
     feature_importance_df = pd.DataFrame()
     ## predict data box
     validation_pred = np.zeros(train.shape[0])
@@ -18,8 +18,6 @@ def Regressors(algorithm,param_set,train,test,features,target,folds=5):
     ## remove inf
     train = train.replace([np.inf, -np.inf], np.nan) # inf 処理
     test = test.replace([np.inf, -np.inf], np.nan) # inf 処理
-    ## k-stratified k-Fold
-    folds = Validation(folds)
     # 外れ値を考慮して, データを分割する
     for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['target_class'].values)):
         print("fold n°{}".format(fold_+1))
@@ -30,7 +28,7 @@ def Regressors(algorithm,param_set,train,test,features,target,folds=5):
         feature_importance_df = pd.concat([feature_importance_df, fold_importance_df], axis=0)
     return validation_pred, test_pred, feature_importance_df
     
-def Lightgbm_Regressor(train,test,trn_idx,val_idx,features,target,param_set,folds,fold_,validation_pred,test_pred):
+def Lightgbm(train,test,trn_idx,val_idx,features,target,param_set,folds,fold_,validation_pred,test_pred):
     # data set
     trn_data = lgb.Dataset(train.iloc[trn_idx][features], label=target.iloc[trn_idx])
     val_data = lgb.Dataset(train.iloc[val_idx][features], label=target.iloc[val_idx])
@@ -46,8 +44,7 @@ def Lightgbm_Regressor(train,test,trn_idx,val_idx,features,target,param_set,fold
     validation_pred[val_idx] = model.predict(train.iloc[val_idx][features], num_iteration=model.best_iteration)
     test_pred += model.predict(test[features], num_iteration=model.best_iteration) / folds.n_splits
     return validation_pred, test_pred, fold_importance_df
-
-## importanceの処理まだ書いてない
+# classificationできるか等不明
 def Xgboost_Regressor(train,test,trn_idx,val_idx,features,target,param_set,folds,fold_,validation_pred,test_pred):
     # data set
     trn_data = xgb.DMatrix(data=train.iloc[trn_idx][features], label=target.iloc[trn_idx])
