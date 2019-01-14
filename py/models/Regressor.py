@@ -5,7 +5,6 @@ from sklearn.ensemble import BaggingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
-from associate import Validation
 
 ### fitting model list ###
 # Ridde(alpha=100)

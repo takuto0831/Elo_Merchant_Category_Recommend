@@ -5,7 +5,6 @@ from sklearn.ensemble import BaggingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
-from associate import Validation
 
 def Ensembles(clf,train_stack,test_stack,train,target,folds=5):
     ## predict data box

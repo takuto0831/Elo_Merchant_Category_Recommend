@@ -4,8 +4,7 @@ import lightgbm as lgb
 import xgboost as xgb
 # from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
-from associate import Validation
-  
+
 ### model list ###
 # LightGBM
 # Xgboost
