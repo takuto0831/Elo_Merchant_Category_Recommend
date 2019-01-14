@@ -8,3 +8,5 @@ py/models/__pycache__
 output/submit
 jn/.ipynb_checkpoints
 input/aggregated
+input/features
+output/tmp
