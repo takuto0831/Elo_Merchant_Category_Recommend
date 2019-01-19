@@ -2,7 +2,6 @@ import numpy as np # linear algebra
 import pandas as pd # data processing
 import lightgbm as lgb
 import xgboost as xgb
-# from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import mean_squared_error
 
 ### model list ###
@@ -44,7 +43,7 @@ def Lightgbm(train,test,trn_idx,val_idx,features,target,param_set,folds,fold_,va
     test_pred += model.predict(test[features], num_iteration=model.best_iteration) / folds.n_splits
     return validation_pred, test_pred, fold_importance_df
 # classificationできるか等不明
-def Xgboost_Regressor(train,test,trn_idx,val_idx,features,target,param_set,folds,fold_,validation_pred,test_pred):
+def Xgboost(train,test,trn_idx,val_idx,features,target,param_set,folds,fold_,validation_pred,test_pred):
     # data set
     trn_data = xgb.DMatrix(data=train.iloc[trn_idx][features], label=target.iloc[trn_idx])
     val_data = xgb.DMatrix(data=train.iloc[val_idx][features], label=target.iloc[val_idx])
