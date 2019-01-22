@@ -82,15 +82,15 @@ class Applicate:
         # kmeans クラスタリング
         kmeans = KMeans(n_clusters = num, random_state=831, n_jobs = -2).fit(data)
         # 群別の構成比を少数派の件数に乗じて群別の抽出件数を計算
-        data['cluster'] = np.nan
-        data['cluster'] = kmeans.labels_
-        count_sum = data.groupby('cluster').count().iloc[0:,0].as_matrix()
+        train['cluster'] = np.nan
+        train.loc[train['target_class'] == 0,'cluster'] = kmeans.labels_
+        count_sum = train.groupby('cluster').count().iloc[0:,0].as_matrix()
         ratio = ( (1-rate) * train["target_class"].sum() ) / ( count_sum.sum()*rate)
         samp_num = np.round(count_sum * ratio,0).astype(np.int32)
         # 群別にサンプリング処理を実施
         tmp = pd.DataFrame(index=[], columns=data.columns)
         for i in np.arange(num) :
-            tmp_ = data[data['cluster']==i].sample(samp_num[i],replace=True)
+            tmp_ = train[train['cluster']==i].sample(samp_num[i],replace=True)
             tmp = pd.concat([tmp,tmp_])
         # 外れ値データを結合
         tmp = pd.concat([tmp,train.query("target_class == 1")])
