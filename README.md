@@ -40,6 +40,14 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 このコンペティションでは, 顧客ロイヤリティのシグナルを明らかにすることによって, 個人に最も関連のある機会を特定して提供するアルゴリズムを開発する. 顧客の生活を向上し, "Elo"が不必要なキャンペーンを行うのを減らし, 顧客に正しい経験を生み出す. `target`列は顧客の2ヶ月後の満足度を表す!!
 
+# 得られた知見まとめ
+
+分類問題と回帰問題の組み合わせに関するアイディア
+
+1. predict = (binary predict)*(outlier value) + (1-(binary predict)) * (no_outlier model)
+2. predict = (binary predict)*(only_outlier model) + (1-(binary predict)) * (no_outlier model)
+3. down sampling (少数派に個数を合わせる手法)
+
 # Directory
 
 ## input
