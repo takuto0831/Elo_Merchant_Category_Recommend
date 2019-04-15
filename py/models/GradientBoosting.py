@@ -16,7 +16,7 @@ def GradientBoosting(algorithm,param_set,train,test,features,target,folds):
     ## remove inf
     train = train.replace([np.inf, -np.inf], np.nan) # inf 処理
     test = test.replace([np.inf, -np.inf], np.nan) # inf 処理
-    # 外れ値を考慮して, データを分割する
+    # 外れ値を考慮して, データを分割する (分類モデル or kfoldの場合も普通に使える)
     for fold_, (trn_idx, val_idx) in enumerate(folds.split(train,train['target_class'].values)):
         print("fold n°{}".format(fold_+1))
         # make model
