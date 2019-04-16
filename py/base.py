@@ -40,7 +40,7 @@ class Process:
         submit_file = feather.read_dataframe(self.home_path + "/Desktop/Elo_kaggle/input/feather/sample_submission.feather")
         submit_file["target"] = predict
         # save for output/(technic name + datetime + .csv)
-        file_name = self.home_path + '/Desktop/Elo_kaggle/output/submit/' + tech + datetime.now().strftime("%Y%m%d") + ".csv"
+        file_name = self.home_path + '/Desktop/Elo_kaggle/output/submit/' + tech + '/' + datetime.now().strftime("%Y%m%d") + ".csv"
         submit_file.to_csv(file_name, index=False)
     def open_parameter(self,file_name):
         f = open(self.home_path + '/Desktop/Elo_kaggle/input/parameters/' + file_name + '.txt', 'rb')
