@@ -42,11 +42,25 @@ Root Mean Squared Error (RMSE)を利用する. カードidごとに, y_hatはロ
 
 # 得られた知見まとめ
 
-分類問題と回帰問題の組み合わせに関するアイディア
+## 分類問題と回帰問題の組み合わせに関するアイディア
 
 1. predict = (binary predict)*(outlier value) + (1-(binary predict)) * (no_outlier model)
 2. predict = (binary predict)*(only_outlier model) + (1-(binary predict)) * (no_outlier model)
 3. down sampling (少数派に個数を合わせる手法)
+
+## 参考文献
+
+- [best practice](https://amalog.hateblo.jp/entry/elo-merchant-category-recommendation)
+
+- [rank learning](http://szdr.hatenablog.com/entry/2018/12/05/001732)
+
+ランキング学習, 次回使ってみたい
+
+- [xentropy](https://github.com/Microsoft/LightGBM/issues/1348)
+
+xentropyとbinaryについて, binaryは二値分類, xentropyは0-1について回帰のように扱う(確率で使える+正規化してrmseが良くなる場合もある)
+
+- [feature selection using null importtance](https://www.kaggle.com/ogrellier/feature-selection-with-null-importances)
 
 # Directory
 
